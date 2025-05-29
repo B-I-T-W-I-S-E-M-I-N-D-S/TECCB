@@ -551,7 +551,10 @@ import torch.nn.parallel
 import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
-import opts_egtea as opts
+# import opts_egtea as opts
+import opts_thumos as opts
+# import opts_muses as opts
+# import opts_egtea as opts
 import time
 import h5py
 from tqdm import tqdm
