@@ -6,10 +6,7 @@
 # import torch.nn.functional as F
 # import torch.optim as optim
 # import numpy as np
-# # import opts_egtea as opts
-# import opts_thumos as opts
-# # import opts_muses as opts
-# # import opts_egtea as opts
+# import opts_egtea as opts
 # import time
 # import h5py
 # from tqdm import tqdm
@@ -24,23 +21,26 @@
 
 # def train_one_epoch(opt, model, train_dataset, optimizer, warmup=False):
 #     train_loader = torch.utils.data.DataLoader(train_dataset,
-#                                                batch_size=opt['batch_size'], shuffle=True,
-#                                                num_workers=0, pin_memory=True, drop_last=False)
+#                                                 batch_size=opt['batch_size'], shuffle=True,
+#                                                 num_workers=0, pin_memory=True,drop_last=False)      
 #     epoch_cost = 0
 #     epoch_cost_cls = 0
 #     epoch_cost_reg = 0
 #     epoch_cost_snip = 0
     
-#     total_iter = len(train_dataset) // opt['batch_size']
-#     cls_loss = MultiCrossEntropyLoss(num_classes=opt['num_of_class'], focal=True)
-#     snip_loss = MultiCrossEntropyLoss(num_classes=opt['num_of_class'], focal=True)
-    
-#     for n_iter, (input_data, cls_label, reg_label, snip_label) in enumerate(tqdm(train_loader)):
+#     total_iter = len(train_dataset)//opt['batch_size']
+#     cls_loss = MultiCrossEntropyLoss(focal=True)
+#     snip_loss = MultiCrossEntropyLoss(focal=True)
+#     for n_iter,(input_data,cls_label,reg_label,snip_label) in enumerate(tqdm(train_loader)):
+
 #         if warmup:
 #             for g in optimizer.param_groups:
 #                 g['lr'] = n_iter * (opt['lr']) / total_iter
         
+#         # act_cls, act_reg, snip_cls = model(input_data.cuda())
 #         act_cls, act_reg, snip_cls = model(input_data.float().cuda())
+
+
         
 #         act_cls.register_hook(partial(cls_loss.collect_grad, cls_label))
 #         snip_cls.register_hook(partial(snip_loss.collect_grad, snip_label))
@@ -48,19 +48,22 @@
 #         cost_reg = 0
 #         cost_cls = 0
 
-#         loss = cls_loss_func_(cls_loss, cls_label, act_cls)
+#         loss = cls_loss_func_(cls_loss, cls_label,act_cls)
 #         cost_cls = loss
-#         epoch_cost_cls += cost_cls.detach().cpu().numpy()    
+            
+#         epoch_cost_cls+= cost_cls.detach().cpu().numpy()    
                
-#         loss = regress_loss_func(reg_label, act_reg)
+#         loss = regress_loss_func(reg_label,act_reg)
 #         cost_reg = loss  
 #         epoch_cost_reg += cost_reg.detach().cpu().numpy()   
 
-#         loss = cls_loss_func_(snip_loss, snip_label, snip_cls)
+#         loss = cls_loss_func_(snip_loss, snip_label,snip_cls)
 #         cost_snip = loss
-#         epoch_cost_snip += cost_snip.detach().cpu().numpy() 
+
+            
+#         epoch_cost_snip+= cost_snip.detach().cpu().numpy() 
         
-#         cost = opt['alpha'] * cost_cls + opt['beta'] * cost_reg + opt['gamma'] * cost_snip    
+#         cost= opt['alpha']*cost_cls +opt['beta']*cost_reg + opt['gamma']*cost_snip    
                 
 #         epoch_cost += cost.detach().cpu().numpy() 
 
@@ -93,7 +96,7 @@
   
 #     optimizer = optim.Adam([{'params': model.history_unit.parameters(), 'lr': 1e-6}, {'params': rest_of_model_params}],lr=opt["lr"],weight_decay = opt["weight_decay"])  
 #     scheduler = torch.optim.lr_scheduler.StepLR(optimizer,step_size = opt["lr_step"])
-#     opt["split"] = "train"
+    
 #     train_dataset = VideoDataSet(opt,subset="train")      
 #     test_dataset = VideoDataSet(opt,subset=opt['inference_subset'])
     
@@ -232,10 +235,10 @@
 #                 for cidx in range(0,len(cls)):
 #                     label=cls[cidx]
 #                     tmp_dict={}
-#                     tmp_dict["segment"] = [float(st*frame_to_time/100.0), float(ed*frame_to_time/100.0)]
-#                     tmp_dict["score"]= float(cls_anc[anc_idx][label])  # Convert to Python float
+#                     tmp_dict["segment"] = [st*frame_to_time/100.0, ed*frame_to_time/100.0]
+#                     tmp_dict["score"]= cls_anc[anc_idx][label]*1.0
 #                     tmp_dict["label"]=dataset.label_name[label]
-#                     tmp_dict["gentime"]= float(idx*frame_to_time/100.0)
+#                     tmp_dict["gentime"]= idx*frame_to_time/100.0
 #                     proposal_anc_dict.append(tmp_dict)
                 
 #             proposal_dict+=proposal_anc_dict
@@ -287,10 +290,10 @@
 #                 for cidx in range(0,len(cls)):
 #                     label=cls[cidx]
 #                     tmp_dict={}
-#                     tmp_dict["segment"] = [float(st*frame_to_time/100.0), float(ed*frame_to_time/100.0)]
-#                     tmp_dict["score"]= float(cls_anc[anc_idx][label])  # Convert to Python float
+#                     tmp_dict["segment"] = [st*frame_to_time/100.0, ed*frame_to_time/100.0]
+#                     tmp_dict["score"]= cls_anc[anc_idx][label]*1.0
 #                     tmp_dict["label"]=dataset.label_name[label]
-#                     tmp_dict["gentime"]= float(idx*frame_to_time/100.0)
+#                     tmp_dict["gentime"]= idx*frame_to_time/100.0
 #                     proposal_anc_dict.append(tmp_dict)
                           
 #             proposal_anc_dict = non_max_suppression(proposal_anc_dict, overlapThresh=opt['soft_nms'])  
@@ -461,10 +464,10 @@
 #                 for cidx in range(0,len(cls)):
 #                     label=cls[cidx]
 #                     tmp_dict={}
-#                     tmp_dict["segment"] = [float(st*frame_to_time/100.0), float(ed*frame_to_time/100.0)]
-#                     tmp_dict["score"]= float(cls_anc[anc_idx][label])  # Convert to Python float
+#                     tmp_dict["segment"] = [st*frame_to_time/100.0, ed*frame_to_time/100.0]
+#                     tmp_dict["score"]= cls_anc[anc_idx][label]*1.0
 #                     tmp_dict["label"]=dataset.label_name[label]
-#                     tmp_dict["gentime"]= float(idx*frame_to_time/100.0)
+#                     tmp_dict["gentime"]= idx*frame_to_time/100.0
 #                     proposal_anc_dict.append(tmp_dict)
                           
 #             proposal_anc_dict = non_max_suppression(proposal_anc_dict, overlapThresh=opt['soft_nms'])  
@@ -538,6 +541,8 @@
 #         pass
 
 
+
+
 import os
 import json
 import torch
@@ -564,23 +569,26 @@ from functools import *
 
 def train_one_epoch(opt, model, train_dataset, optimizer, warmup=False):
     train_loader = torch.utils.data.DataLoader(train_dataset,
-                                               batch_size=opt['batch_size'], shuffle=True,
-                                               num_workers=0, pin_memory=True, drop_last=False)
+                                                batch_size=opt['batch_size'], shuffle=True,
+                                                num_workers=0, pin_memory=True,drop_last=False)      
     epoch_cost = 0
     epoch_cost_cls = 0
     epoch_cost_reg = 0
     epoch_cost_snip = 0
     
-    total_iter = len(train_dataset) // opt['batch_size']
-    cls_loss = MultiCrossEntropyLoss(num_classes=opt['num_of_class'], focal=True)
-    snip_loss = MultiCrossEntropyLoss(num_classes=opt['num_of_class'], focal=True)
-    
-    for n_iter, (input_data, cls_label, reg_label, snip_label) in enumerate(tqdm(train_loader)):
+    total_iter = len(train_dataset)//opt['batch_size']
+    cls_loss = MultiCrossEntropyLoss(focal=True)
+    snip_loss = MultiCrossEntropyLoss(focal=True)
+    for n_iter,(input_data,cls_label,reg_label,snip_label) in enumerate(tqdm(train_loader)):
+
         if warmup:
             for g in optimizer.param_groups:
                 g['lr'] = n_iter * (opt['lr']) / total_iter
         
+        # act_cls, act_reg, snip_cls = model(input_data.cuda())
         act_cls, act_reg, snip_cls = model(input_data.float().cuda())
+
+
         
         act_cls.register_hook(partial(cls_loss.collect_grad, cls_label))
         snip_cls.register_hook(partial(snip_loss.collect_grad, snip_label))
@@ -588,19 +596,22 @@ def train_one_epoch(opt, model, train_dataset, optimizer, warmup=False):
         cost_reg = 0
         cost_cls = 0
 
-        loss = cls_loss_func_(cls_loss, cls_label, act_cls)
+        loss = cls_loss_func_(cls_loss, cls_label,act_cls)
         cost_cls = loss
-        epoch_cost_cls += cost_cls.detach().cpu().numpy()    
+            
+        epoch_cost_cls+= cost_cls.detach().cpu().numpy()    
                
-        loss = regress_loss_func(reg_label, act_reg)
+        loss = regress_loss_func(reg_label,act_reg)
         cost_reg = loss  
         epoch_cost_reg += cost_reg.detach().cpu().numpy()   
 
-        loss = cls_loss_func_(snip_loss, snip_label, snip_cls)
+        loss = cls_loss_func_(snip_loss, snip_label,snip_cls)
         cost_snip = loss
-        epoch_cost_snip += cost_snip.detach().cpu().numpy() 
+
+            
+        epoch_cost_snip+= cost_snip.detach().cpu().numpy() 
         
-        cost = opt['alpha'] * cost_cls + opt['beta'] * cost_reg + opt['gamma'] * cost_snip    
+        cost= opt['alpha']*cost_cls +opt['beta']*cost_reg + opt['gamma']*cost_snip    
                 
         epoch_cost += cost.detach().cpu().numpy() 
 
@@ -633,7 +644,7 @@ def train(opt):
   
     optimizer = optim.Adam([{'params': model.history_unit.parameters(), 'lr': 1e-6}, {'params': rest_of_model_params}],lr=opt["lr"],weight_decay = opt["weight_decay"])  
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer,step_size = opt["lr_step"])
-    opt["split"] = "train"
+    
     train_dataset = VideoDataSet(opt,subset="train")      
     test_dataset = VideoDataSet(opt,subset=opt['inference_subset'])
     
@@ -771,12 +782,6 @@ def eval_map_nms(opt, dataset, output_cls, output_reg, labels_cls, labels_reg):
                 
                 for cidx in range(0,len(cls)):
                     label=cls[cidx]
-                    
-                    # Add bounds checking to prevent index out of range
-                    if label >= len(dataset.label_name):
-                        print(f"Warning: label index {label} >= len(dataset.label_name) {len(dataset.label_name)}")
-                        continue
-                    
                     tmp_dict={}
                     tmp_dict["segment"] = [float(st*frame_to_time/100.0), float(ed*frame_to_time/100.0)]
                     tmp_dict["score"]= float(cls_anc[anc_idx][label])  # Convert to Python float
@@ -830,15 +835,8 @@ def eval_map_supnet(opt, dataset, output_cls, output_reg, labels_cls, labels_reg
                 length = anchors[anc_idx]* np.exp(reg_anc[anc_idx][1])
                 st= ed-length
                 
-                # In eval_map_supnet function, around line 318, replace this section:
                 for cidx in range(0,len(cls)):
                     label=cls[cidx]
-                    
-                    # Add bounds checking to prevent index out of range
-                    if label >= len(dataset.label_name):
-                        print(f"Warning: label index {label} >= len(dataset.label_name) {len(dataset.label_name)}")
-                        continue
-                    
                     tmp_dict={}
                     tmp_dict["segment"] = [float(st*frame_to_time/100.0), float(ed*frame_to_time/100.0)]
                     tmp_dict["score"]= float(cls_anc[anc_idx][label])  # Convert to Python float
@@ -932,7 +930,6 @@ def test(opt):
     model.load_state_dict(base_dict)
     model.eval()
     
-    opt["split"] = "test"
     dataset = VideoDataSet(opt,subset=opt['inference_subset'])
     
     cls_loss, reg_loss, tot_loss, output_cls, output_reg, labels_cls, labels_reg, working_time, total_frames = eval_frame(opt, model,dataset)
@@ -1012,15 +1009,8 @@ def test_online(opt):
                 length = anchors[anc_idx]* np.exp(reg_anc[anc_idx][1])
                 st= ed-length
                 
-                # In test_online function, around line 448, replace this section:
                 for cidx in range(0,len(cls)):
                     label=cls[cidx]
-                    
-                    # Add bounds checking to prevent index out of range
-                    if label >= len(dataset.label_name):
-                        print(f"Warning: label index {label} >= len(dataset.label_name) {len(dataset.label_name)}")
-                        continue
-                    
                     tmp_dict={}
                     tmp_dict["segment"] = [float(st*frame_to_time/100.0), float(ed*frame_to_time/100.0)]
                     tmp_dict["score"]= float(cls_anc[anc_idx][label])  # Convert to Python float
