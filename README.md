@@ -47,6 +47,10 @@ The configuration files for EGTEA are already provided in the repository. For ot
 To train the main HAT model, execute the command below.
 ```
 python main.py --mode=train --split=[split #]*
+
+```
+```
+!python main.py --mode=train --batch_size=256 --epoch=1
 ```
 *If the dataset has any splits (e.g., EGTEA has 4 splits)
 
@@ -62,6 +66,11 @@ python supnet.py --mode=train --split=[split #]
 To test HAT, execute the command below.
 ```
 python main.py --mode=test --split=[split #]
+```
+
+```
+!python main.py --mode=test --batch_size=256 --epoch=1
+
 ```
 
 ## Citing HAT
