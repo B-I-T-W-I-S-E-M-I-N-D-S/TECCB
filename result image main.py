@@ -14,11 +14,165 @@ from tqdm import tqdm
 from iou_utils import *
 from eval import evaluation_detection
 from tensorboardX import SummaryWriter
-from dataset import VideoDataSet, calc_iou  # Import calc_iou explicitly
+from dataset import VideoDataSet, calc_iou
 from models import MYNET, SuppressNet
 from loss_func import cls_loss_func, cls_loss_func_, regress_loss_func
 from loss_func import MultiCrossEntropyLoss
 from functools import *
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import cv2
+from typing import List, Dict, Optional
+
+# Visualization Configuration
+# Visualization Configuration
+VIS_CONFIG = {
+    'frame_interval': 1.0,  # Sample frames every 1 second
+    'max_frames': 20,  # Maximum number of frames to display
+    'save_dir': './output/visualizations',
+    'gt_color': '#1f77b4',  # Blue for ground truth
+    'pred_color': '#ff7f0e',  # Orange for predictions
+    'fontsize_label': 10,  # Reduced for better fit
+    'fontsize_title': 14,
+    'frame_highlight_both': 'green',
+    'frame_highlight_gt': 'red',
+    'frame_highlight_pred': 'black',
+    'iou_threshold': 0.3,
+    'frame_scale_factor': 0.8,  # Reduced scaling for smaller figure
+}
+
+def visualize_action_lengths(
+    video_id: str,
+    pred_segments: List[Dict],
+    gt_segments: List[Dict],
+    video_path: str,
+    duration: float,
+    save_dir: str = VIS_CONFIG['save_dir'],
+    frame_interval: float = VIS_CONFIG['frame_interval']
+) -> None:
+    """
+    Generate a visualization plot comparing ground truth and predicted action lengths with video frames.
+
+    Args:
+        video_id: Video identifier (e.g., 'my_video').
+        pred_segments: List of predicted segments with 'label', 'start', 'end', 'duration', 'score'.
+        gt_segments: List of ground truth segments with 'label', 'start', 'end', 'duration'.
+        video_path: Path to the input video file.
+        duration: Total duration of the video in seconds.
+        save_dir: Directory to save the output image.
+        frame_interval: Time interval between sampled frames (seconds).
+    """
+    os.makedirs(save_dir, exist_ok=True)
+
+    # Calculate frame sampling times
+    num_frames = int(duration / frame_interval) + 1
+    if num_frames > VIS_CONFIG['max_frames']:
+        frame_interval = duration / (VIS_CONFIG['max_frames'] - 1)
+        num_frames = VIS_CONFIG['max_frames']
+        print(f"Warning: Video duration ({duration:.1f}s) requires {num_frames} frames. Adjusted frame_interval to {frame_interval:.2f}s.")
+    
+    frame_times = np.linspace(0, duration, num_frames, endpoint=False)
+
+    # Load video frames
+    frames = []
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        print(f"Warning: Could not open video {video_path}. Using placeholder frames.")
+        frames = [np.ones((100, 100, 3), dtype=np.uint8) * 255 for _ in frame_times]
+    else:
+        for t in frame_times:
+            cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
+            ret, frame = cap.read()
+            if ret:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                # Resize frame to reduce memory usage
+                frame = cv2.resize(frame, (int(frame.shape[1] * 0.5), int(frame.shape[0] * 0.5)))
+                frames.append(frame)
+            else:
+                frames.append(np.ones((100, 100, 3), dtype=np.uint8) * 255)
+        cap.release()
+
+    # Initialize figure
+    fig = plt.figure(figsize=(num_frames * VIS_CONFIG['frame_scale_factor'], 6), constrained_layout=True)
+    gs = fig.add_gridspec(3, num_frames, height_ratios=[3, 1, 1])
+
+    # Plot frames
+    for i, (t, frame) in enumerate(zip(frame_times, frames)):
+        ax = fig.add_subplot(gs[0, i])
+        
+        # Check if frame falls within GT or predicted segments
+        gt_hit = any(seg['start'] <= t <= seg['end'] for seg in gt_segments)
+        pred_hit = any(seg['start'] <= t <= seg['end'] for seg in pred_segments)
+        
+        # Set border color
+        border_color = None
+        if gt_hit and pred_hit:
+            border_color = VIS_CONFIG['frame_highlight_both']
+        elif gt_hit:
+            border_color = VIS_CONFIG['frame_highlight_gt']
+        elif pred_hit:
+            border_color = VIS_CONFIG['frame_highlight_pred']
+        
+        ax.imshow(frame)
+        ax.axis('off')
+        if border_color:
+            for spine in ax.spines.values():
+                spine.set_edgecolor(border_color)
+                spine.set_linewidth(2)
+        
+        ax.set_title(f"{t:.1f}s", fontsize=VIS_CONFIG['fontsize_label'], 
+                     color=border_color if border_color else 'black')
+
+    # Plot ground truth bar
+    ax_gt = fig.add_subplot(gs[1, :])
+    ax_gt.set_xlim(0, duration)
+    ax_gt.set_ylim(0, 1)
+    ax_gt.axis('off')
+    ax_gt.text(-0.02 * duration, 0.5, "Ground Truth", fontsize=VIS_CONFIG['fontsize_title'], 
+               va='center', ha='right', weight='bold')
+
+    for seg in gt_segments:
+        start, end = seg['start'], seg['end']
+        width = end - start
+        label = seg['label'][:10] + '...' if len(seg['label']) > 10 else seg['label']
+        ax_gt.add_patch(patches.Rectangle(
+            (start, 0.3), width, 0.4, facecolor=VIS_CONFIG['gt_color'], 
+            edgecolor='black', alpha=0.8
+        ))
+        ax_gt.text((start + end) / 2, 0.5, label, ha='center', va='center', 
+                   fontsize=VIS_CONFIG['fontsize_label'], color='white')
+        ax_gt.text(start, 0.2, f"{start:.1f}", ha='center', fontsize=8, color='black')
+        ax_gt.text(end, 0.2, f"{end:.1f}", ha='center', fontsize=8, color='black')
+
+    # Plot prediction bar
+    ax_pred = fig.add_subplot(gs[2, :])
+    ax_pred.set_xlim(0, duration)
+    ax_pred.set_ylim(0, 1)
+    ax_pred.axis('off')
+    ax_pred.text(-0.02 * duration, 0.5, "Prediction", fontsize=VIS_CONFIG['fontsize_title'], 
+                 va='center', ha='right', weight='bold')
+
+    for seg in pred_segments:
+        start, end = seg['start'], seg['end']
+        width = end - start
+        label = seg['label'][:10] + '...' if len(seg['label']) > 10 else seg['label']
+        ax_pred.add_patch(patches.Rectangle(
+            (start, 0.3), width, 0.4, facecolor=VIS_CONFIG['pred_color'], 
+            edgecolor='black', alpha=0.8
+        ))
+        ax_pred.text((start + end) / 2, 0.5, label, ha='center', va='center', 
+                     fontsize=VIS_CONFIG['fontsize_label'], color='white')
+        ax_pred.text(start, 0.8, f"{start:.1f}", ha='center', fontsize=8, color='black')
+        ax_pred.text(end, 0.8, f"{end:.1f}", ha='center', fontsize=8, color='black')
+
+    # Save plot
+    jpg_path = os.path.join(save_dir, f"viz_{video_id}_{opt['exp']}.png")  # Use PNG
+    plt.savefig(jpg_path, dpi=100, bbox_inches='tight')  # Lower DPI
+    print(f"[✅ Saved Visualization]: {jpg_path}")
+    plt.close()
+
+
 
 def train_one_epoch(opt, model, train_dataset, optimizer, warmup=False):
     train_loader = torch.utils.data.DataLoader(train_dataset,
@@ -379,34 +533,35 @@ def test(opt, video_name=None):
     
     mAP = evaluation_detection(opt)
     
-    # New: Compare predicted and ground truth action lengths
+    # Compare predicted and ground truth action lengths
     if video_name:
         print("\nComparing Predicted and Ground Truth Action Lengths for Video:", video_name)
         # Load ground truth annotations
         with open(opt["video_anno"].format(opt["split"]), 'r') as f:
             anno_data = json.load(f)
         gt_annotations = anno_data['database'][video_name]['annotations']
+        duration = anno_data['database'][video_name]['duration']
         
         # Extract ground truth segments
         gt_segments = []
         for anno in gt_annotations:
             start, end = anno['segment']
             label = anno['label']
-            duration = end - start
-            gt_segments.append({'label': label, 'start': start, 'end': end, 'duration': duration})
+            duration_seg = end - start
+            gt_segments.append({'label': label, 'start': start, 'end': end, 'duration': duration_seg})
         
-        # Extract predicted segments from result_dict
+        # Extract predicted segments
         pred_segments = []
         for pred in result_dict[video_name]:
             start, end = pred['segment']
             label = pred['label']
             score = pred['score']
-            duration = end - start
-            pred_segments.append({'label': label, 'start': start, 'end': end, 'duration': duration, 'score': score})
+            duration_seg = end - start
+            pred_segments.append({'label': label, 'start': start, 'end': end, 'duration': duration_seg, 'score': score})
         
-        # Match predictions to ground truth using IoU
+        # Print comparison table
         matches = []
-        iou_threshold = 0.3  # Same as evaluation default for matching
+        iou_threshold = VIS_CONFIG['iou_threshold']
         used_gt_indices = set()
         for pred in pred_segments:
             best_iou = 0
@@ -428,12 +583,10 @@ def test(opt, video_name=None):
             else:
                 matches.append({'pred': pred, 'gt': None, 'iou': 0})
         
-        # Include unmatched ground truth segments
         for gt_idx, gt in enumerate(gt_segments):
             if gt_idx not in used_gt_indices:
                 matches.append({'pred': None, 'gt': gt, 'iou': 0})
         
-        # Print comparison table
         print("\n{:<20} {:<30} {:<30} {:<15} {:<10}".format(
             "Action Label", "Predicted Segment (s)", "Ground Truth Segment (s)", "Duration Diff (s)", "IoU"))
         print("-" * 105)
@@ -459,15 +612,28 @@ def test(opt, video_name=None):
         
         # Summarize
         matched_count = sum(1 for m in matches if m['pred'] and m['gt'])
-        avg_duration_diff = np.mean([m['pred']['duration'] - m['gt']['duration'] for m in matches if m['pred'] and m['gt']])
-        avg_iou = np.mean([m['iou'] for m in matches if m['iou'] > 0])
+        avg_duration_diff = np.mean([m['pred']['duration'] - m['gt']['duration'] for m in matches if m['pred'] and m['gt']]) if matched_count > 0 else 0
+        avg_iou = np.mean([m['iou'] for m in matches if m['iou'] > 0]) if any(m['iou'] > 0 for m in matches) else 0
         print(f"\nSummary:")
         print(f"- Total Predictions: {len(pred_segments)}")
         print(f"- Total Ground Truth: {len(gt_segments)}")
         print(f"- Matched Segments: {matched_count}")
         print(f"- Average Duration Difference (Matched): {avg_duration_diff:.2f}s")
         print(f"- Average IoU (Matched): {avg_iou:.2f}")
-    
+
+        # Generate visualization
+        video_path = opt.get('video_path', '')  # Add --video_path to opts_egtea.py
+        if os.path.exists(video_path):
+            visualize_action_lengths(
+                video_id=video_name,
+                pred_segments=pred_segments,
+                gt_segments=gt_segments,
+                video_path=video_path,
+                duration=duration
+            )
+        else:
+            print(f"Warning: Video path {video_path} not found. Skipping visualization.")
+
     return mAP
 
 def test_online(opt, video_name=None):
