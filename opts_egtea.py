@@ -1,6 +1,5 @@
 import argparse
 
-
 def parse_opt():
     parser = argparse.ArgumentParser()
     # Overall settings
@@ -9,48 +8,53 @@ def parse_opt():
         type=str,
         default='train')
     parser.add_argument(
+        '--video_name',
+        type=str,
+        default=None,
+        help='Name of the single video to evaluate')
+    parser.add_argument(
         '--checkpoint_path',
         type=str,
         default='./checkpoint')
     parser.add_argument(
         '--segment_size',
         type=int,
-        default=64),
+        default=64)
     parser.add_argument(
         '--anchors',
         type=str,
-        default='2,4,6,8,12,16'),
+        default='2,4,6,8,12,16')
     parser.add_argument(
-        '--seed', 
-        default=7, 
+        '--seed',
+        default=7,
         type=int,
-        help='random seed for reproducibility')    
-    
+        help='random seed for reproducibility')
+
     # Overall Dataset settings
     parser.add_argument(
         '--num_of_class',
         type=int,
-        default=23)   
+        default=23)
     parser.add_argument(
         '--data_format',
         type=str,
-        default="npz_i3d")     
+        default="npz_i3d")
     parser.add_argument(
         '--data_rescale',
         default=False,
-        action='store_true')  
+        action='store_true')
     parser.add_argument(
-        '--predefined_fps', 
-        default=None, 
-        type=float)    
+        '--predefined_fps',
+        default=None,
+        type=float)
     parser.add_argument(
         '--rgb_only',
         default=False,
-        action='store_true')   
+        action='store_true')
     parser.add_argument(
         '--video_anno',
         type=str,
-        default="./data/egtea_annotations_split{}.json")           
+        default="./data/egtea_annotations_split{}.json")
     parser.add_argument(
         '--video_feature_all_train',
         type=str,
@@ -59,7 +63,6 @@ def parse_opt():
         '--video_feature_all_test',
         type=str,
         default="./data/I3D/")
-    
     parser.add_argument(
         '--setup',
         type=str,
@@ -72,8 +75,8 @@ def parse_opt():
         '--split',
         type=str,
         default="1")
-        
-    #network
+
+    # Network
     parser.add_argument(
         '--feat_dim',
         type=int,
@@ -102,7 +105,7 @@ def parse_opt():
         '--dec_head',
         type=int,
         default=4)
-        
+
     # Training settings
     parser.add_argument(
         '--batch_size',
@@ -124,7 +127,7 @@ def parse_opt():
         '--lr_step',
         type=int,
         default=3)
-        
+
     # Post processing
     parser.add_argument(
         '--alpha',
@@ -145,15 +148,15 @@ def parse_opt():
     parser.add_argument(
         '--pos_threshold',
         type=float,
-        default=0.5)       
+        default=0.5)
     parser.add_argument(
         '--sup_threshold',
         type=float,
-        default=0.1)     
+        default=0.1)
     parser.add_argument(
         '--threshold',
         type=float,
-        default=0.1)     
+        default=0.1)
     parser.add_argument(
         '--inference_subset',
         type=str,
@@ -189,8 +192,7 @@ def parse_opt():
     parser.add_argument(
         '--wterm',
         type=bool,
-        default=False)    
-    
-    args = parser.parse_args()
+        default=False)
 
+    args = parser.parse_args()
     return args
