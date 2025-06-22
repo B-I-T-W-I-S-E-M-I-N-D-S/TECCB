@@ -24,6 +24,7 @@ import warnings
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import nest_asyncio
 from pyngrok import ngrok
@@ -797,6 +798,15 @@ async def predict(prediction: VideoPrediction = Depends(action_model.predict)):
     }
     """
     return prediction
+
+@app.get("/download/{file_type}/{file_name}")
+async def download_file(file_type: str, file_name: str):
+    if file_type not in ["visualizations", "videos"]:
+        raise HTTPException(status_code=400, detail="Invalid file_type. Use 'visualizations' or 'videos'.")
+    file_path = os.path.join("output", file_type, file_name)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail=f"File {file_path} not found.")
+    return FileResponse(file_path, media_type="application/octet-stream", filename=file_name)
 
 @app.on_event("startup")
 async def startup():
