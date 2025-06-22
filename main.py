@@ -639,7 +639,11 @@ class ActionDetectionModel:
         else:
             raise HTTPException(status_code=400, detail=f"Invalid pptype: {self.opt['pptype']}")
 
-        mAP = evaluation_detection(self.opt)
+        # Modified: Handle mAP as an array and compute the average
+        mAP_result = evaluation_detection(self.opt)
+        # Assuming mAP_result is an array of mAP values; take the mean
+        mAP = float(np.mean(mAP_result)) if isinstance(mAP_result, (list, np.ndarray)) else float(mAP_result)
+
         video_anno_file = self.opt["video_anno"].format(self.opt["split"])
         with open(video_anno_file, 'r') as f:
             anno_data = json.load(f)
@@ -723,7 +727,7 @@ class ActionDetectionModel:
             pred_segments=[Segment(**seg) for seg in pred_segments],
             gt_segments=[Segment(**{k: v for k, v in seg.items() if k != 'score'}) for seg in gt_segments],
             summary=summary,
-            mAP=float(mAP),
+            mAP=mAP,  # Use the scalar mAP value
             visualization_path=visualization_path,
             video_output_path=video_output_path
         )
