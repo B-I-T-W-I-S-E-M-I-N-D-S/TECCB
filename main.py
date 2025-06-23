@@ -24,12 +24,13 @@ import warnings
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 import nest_asyncio
 from pyngrok import ngrok
+import uuid
 
-# Visualization Configuration (Updated)
+# Visualization Configuration
 VIS_CONFIG = {
     'frame_interval': 1.0,
     'max_frames': 20,
@@ -91,14 +92,26 @@ class VideoPrediction(BaseModel):
     video_output_path: Optional[str] = None
     video_task_id: Optional[str] = None
 
+class TaskStatus(BaseModel):
+    visualization_path: Optional[str] = None
+    video_output_path: Optional[str] = None
+    visualization_stream_url: Optional[str] = None
+    video_stream_url: Optional[str] = None
+    status: str
+    error: Optional[str] = None
+
 # Action Detection Model Class
 class ActionDetectionModel:
     def __init__(self, opt):
         self.opt = opt
         self.model = None
         self.suppress_model = None
-        # Store task status
         self.task_status = {}
+        self.base_url = None  # Will be set to ngrok public URL
+
+    def set_base_url(self, base_url: str):
+        """Set the base URL for streaming endpoints"""
+        self.base_url = base_url
 
     def load_model(self):
         """Loads the MYNET and SuppressNet models"""
@@ -132,12 +145,12 @@ class ActionDetectionModel:
     ) -> str:
         os.makedirs(save_dir, exist_ok=True)
         if task_id:
-            self.task_status[task_id] = "processing"
+            self.task_status[task_id] = {"status": "processing"}
         try:
             cap = cv2.VideoCapture(video_path)
             if not cap.isOpened():
                 if task_id:
-                    self.task_status[task_id] = "failed"
+                    self.task_status[task_id] = {"status": "failed", "error": f"Could not open video {video_path}"}
                 raise HTTPException(status_code=400, detail=f"Could not open video {video_path}")
             
             fps = cap.get(cv2.CAP_PROP_FPS)
@@ -155,7 +168,7 @@ class ActionDetectionModel:
             if not out.isOpened():
                 cap.release()
                 if task_id:
-                    self.task_status[task_id] = "failed"
+                    self.task_status[task_id] = {"status": "failed", "error": f"Could not initialize video writer for {output_path}"}
                 raise HTTPException(status_code=500, detail=f"Could not initialize video writer for {output_path}")
 
             min_duration = VIS_CONFIG['min_segment_duration']
@@ -233,7 +246,7 @@ class ActionDetectionModel:
                     pred_text_width = pred_text_bbox[2] - pred_text_bbox[0]
                 else:
                     gt_text_size, _ = cv2.getTextSize("GT", cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
-                    pred_text_size, _ = cv2.getTextSize("Pred", cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
+                    pred_text_size, _ = cv2.getTextSize("Pred", action_model, cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
                     gt_text_width = gt_text_size[0]
                     pred_text_width = pred_text_size[0]
                 max_text_width = max(gt_text_width, pred_text_width)
@@ -371,11 +384,15 @@ class ActionDetectionModel:
             out.release()
             print(f"[✅ Saved Annotated Video]: {output_path}, Written Frames={written_frames}")
             if task_id:
-                self.task_status[task_id] = "completed"
+                self.task_status[task_id] = {
+                    "status": "completed",
+                    "video_output_path": output_path,
+                    "video_stream_url": f"{self.base_url}/stream/videos/{os.path.basename(output_path)}"
+                }
             return output_path
         except Exception as e:
             if task_id:
-                self.task_status[task_id] = "failed"
+                self.task_status[task_id] = {"status": "failed", "error": str(e)}
             raise e
 
     def visualize_action_lengths(
@@ -391,7 +408,7 @@ class ActionDetectionModel:
     ) -> str:
         os.makedirs(save_dir, exist_ok=True)
         if task_id:
-            self.task_status[task_id] = "processing"
+            self.task_status[task_id] = {"status": "processing"}
         try:
             num_frames = int(duration / frame_interval) + 1
             if num_frames > VIS_CONFIG['max_frames']:
@@ -483,11 +500,15 @@ class ActionDetectionModel:
             plt.close()
             print(f"[✅ Saved Visualization]: {jpg_path}")
             if task_id:
-                self.task_status[task_id] = "completed"
+                self.task_status[task_id] = {
+                    "status": "completed",
+                    "visualization_path": jpg_path,
+                    "visualization_stream_url": f"{self.base_url}/stream/visualizations/{os.path.basename(jpg_path)}"
+                }
             return jpg_path
         except Exception as e:
             if task_id:
-                self.task_status[task_id] = "failed"
+                self.task_status[task_id] = {"status": "failed", "error": str(e)}
             raise e
 
     def eval_frame(self, dataset):
@@ -668,12 +689,16 @@ class ActionDetectionModel:
             self.task_status[task_id] = {
                 "visualization_path": visualization_path,
                 "video_output_path": video_output_path,
+                "visualization_stream_url": f"{self.base_url}/stream/visualizations/{os.path.basename(visualization_path)}",
+                "video_stream_url": f"{self.base_url}/stream/videos/{os.path.basename(video_output_path)}",
                 "status": "completed"
             }
         except Exception as e:
             self.task_status[task_id] = {
                 "visualization_path": None,
                 "video_output_path": None,
+                "visualization_stream_url": None,
+                "video_stream_url": None,
                 "status": "failed",
                 "error": str(e)
             }
@@ -762,11 +787,8 @@ class ActionDetectionModel:
             "avg_iou": float(avg_iou)
         }
 
-        # Generate a unique task ID
-        import uuid
         task_id = str(uuid.uuid4())
 
-        # Schedule visualization and video annotation in the background
         if os.path.exists(video_path):
             background_tasks.add_task(
                 self.generate_visualizations,
@@ -780,6 +802,8 @@ class ActionDetectionModel:
             self.task_status[task_id] = {
                 "visualization_path": None,
                 "video_output_path": None,
+                "visualization_stream_url": None,
+                "video_stream_url": None,
                 "status": "pending"
             }
 
@@ -794,12 +818,12 @@ class ActionDetectionModel:
             video_task_id=task_id if os.path.exists(video_path) else None
         )
 
-    async def get_task_status(self, task_id: str) -> Dict:
+    async def get_task_status(self, task_id: str) -> TaskStatus:
         """Retrieve the status of a background visualization task"""
         status = self.task_status.get(task_id, None)
         if not status:
             raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
-        return status
+        return TaskStatus(**status)
 
 # Initialize FastAPI app
 app = FastAPI(title="Action Detection API")
@@ -868,8 +892,8 @@ async def predict(prediction: VideoPrediction = Depends(action_model.predict)):
     """
     return prediction
 
-@app.get("/task_status/{task_id}")
-async def task_status(task_status: Dict = Depends(action_model.get_task_status)):
+@app.get("/task_status/{task_id}", response_model=TaskStatus)
+async def task_status(task_status: TaskStatus = Depends(action_model.get_task_status)):
     """
     Check the status of a background visualization task.
 
@@ -877,19 +901,44 @@ async def task_status(task_status: Dict = Depends(action_model.get_task_status))
     {
         "visualization_path": "output/visualizations/viz_example_video_exp.png",
         "video_output_path": "output/videos/annotated_example_video_exp.avi",
+        "visualization_stream_url": "https://<ngrok-id>.ngrok.io/stream/visualizations/viz_example_video_exp.png",
+        "video_stream_url": "https://<ngrok-id>.ngrok.io/stream/videos/annotated_example_video_exp.avi",
         "status": "completed"
-    }
-    or
-    {
-        "visualization_path": null,
-        "video_output_path": null,
-        "status": "pending"
     }
     """
     return task_status
 
+@app.get("/stream/{file_type}/{file_name}")
+async def stream_file(file_type: str, file_name: str):
+    """
+    Stream a video or visualization file.
+    """
+    if file_type not in ["visualizations", "videos"]:
+        raise HTTPException(status_code=400, detail="Invalid file_type. Use 'visualizations' or 'videos'.")
+    file_path = os.path.join("output", file_type, file_name)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail=f"File {file_path} not found.")
+    
+    def iterfile():
+        with open(file_path, mode="rb") as file_like:
+            while chunk := file_like.read(1024 * 1024):  # Read 1MB chunks
+                yield chunk
+    
+    media_type = "video/x-msvideo" if file_type == "videos" else "image/png"
+    return StreamingResponse(
+        iterfile(),
+        media_type=media_type,
+        headers={
+            "Accept-Ranges": "bytes",
+            "Content-Disposition": f'inline; filename="{file_name}"'
+        }
+    )
+
 @app.get("/download/{file_type}/{file_name}")
 async def download_file(file_type: str, file_name: str):
+    """
+    Download a video or visualization file.
+    """
     if file_type not in ["visualizations", "videos"]:
         raise HTTPException(status_code=400, detail="Invalid file_type. Use 'visualizations' or 'videos'.")
     file_path = os.path.join("output", file_type, file_name)
@@ -901,10 +950,13 @@ async def download_file(file_type: str, file_name: str):
 async def startup():
     action_model.load_model()
     print("Action detection model loaded successfully")
+    # Set the base URL for streaming
+    port = 8004
+    ngrok_tunnel = ngrok.connect(port)
+    action_model.set_base_url(ngrok_tunnel.public_url)
+    print('Public URL:', ngrok_tunnel.public_url)
 
 if __name__ == '__main__':
     port = 8004
-    ngrok_tunnel = ngrok.connect(port)
-    print('Public URL:', ngrok_tunnel.public_url)
     nest_asyncio.apply()
     uvicorn.run(app, port=port)
