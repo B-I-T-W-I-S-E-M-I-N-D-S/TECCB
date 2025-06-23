@@ -22,7 +22,7 @@ from typing import List, Dict, Optional
 from PIL import Image, ImageDraw, ImageFont
 import warnings
 import uvicorn
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -89,6 +89,7 @@ class VideoPrediction(BaseModel):
     mAP: float
     visualization_path: Optional[str] = None
     video_output_path: Optional[str] = None
+    video_task_id: Optional[str] = None
 
 # Action Detection Model Class
 class ActionDetectionModel:
@@ -96,6 +97,8 @@ class ActionDetectionModel:
         self.opt = opt
         self.model = None
         self.suppress_model = None
+        # Store task status
+        self.task_status = {}
 
     def load_model(self):
         """Loads the MYNET and SuppressNet models"""
@@ -124,242 +127,256 @@ class ActionDetectionModel:
         text_scale: float = VIS_CONFIG['video_text_scale'] * 1.2,
         gt_text_color: tuple = VIS_CONFIG['video_gt_text_color'],
         pred_text_color: tuple = VIS_CONFIG['video_pred_text_color'],
-        text_thickness: int = VIS_CONFIG['video_text_thickness']
+        text_thickness: int = VIS_CONFIG['video_text_thickness'],
+        task_id: Optional[str] = None
     ) -> str:
         os.makedirs(save_dir, exist_ok=True)
-        cap = cv2.VideoCapture(video_path)
-        if not cap.isOpened():
-            raise HTTPException(status_code=400, detail=f"Could not open video {video_path}")
-        
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        duration = total_frames / fps
+        if task_id:
+            self.task_status[task_id] = "processing"
+        try:
+            cap = cv2.VideoCapture(video_path)
+            if not cap.isOpened():
+                if task_id:
+                    self.task_status[task_id] = "failed"
+                raise HTTPException(status_code=400, detail=f"Could not open video {video_path}")
+            
+            fps = cap.get(cv2.CAP_PROP_FPS)
+            frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            duration = total_frames / fps
 
-        footer_height = VIS_CONFIG['video_footer_height']
-        output_height = frame_height + footer_height
-        output_path = os.path.join(save_dir, f"annotated_{video_id}_{self.opt['exp']}.avi")
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, output_height))
+            footer_height = VIS_CONFIG['video_footer_height']
+            output_height = frame_height + footer_height
+            output_path = os.path.join(save_dir, f"annotated_{video_id}_{self.opt['exp']}.avi")
+            fourcc = cv2.VideoWriter_fourcc(*'XVID')
+            out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, output_height))
 
-        if not out.isOpened():
-            cap.release()
-            raise HTTPException(status_code=500, detail=f"Could not initialize video writer for {output_path}")
+            if not out.isOpened():
+                cap.release()
+                if task_id:
+                    self.task_status[task_id] = "failed"
+                raise HTTPException(status_code=500, detail=f"Could not initialize video writer for {output_path}")
 
-        min_duration = VIS_CONFIG['min_segment_duration']
-        gt_segments = [seg for seg in gt_segments if seg['duration'] >= min_duration]
-        pred_segments = [seg for seg in pred_segments if seg['duration'] >= min_duration]
+            min_duration = VIS_CONFIG['min_segment_duration']
+            gt_segments = [seg for seg in gt_segments if seg['duration'] >= min_duration]
+            pred_segments = [seg for seg in pred_segments if seg['duration'] >= min_duration]
 
-        color_palette = [
-            (128, 0, 0), (60, 20, 220), (0, 128, 0), (128, 0, 128), (79, 69, 54),
-            (128, 128, 0), (0, 0, 128), (130, 0, 75), (34, 139, 34), (0, 85, 204),
-            (149, 146, 209), (235, 206, 135), (250, 230, 230), (191, 226, 159),
-            (185, 218, 255), (255, 204, 204), (193, 182, 255), (201, 252, 189),
-            (144, 128, 112), (112, 25, 25), (102, 51, 102), (0, 128, 128), (171, 71, 0)
-        ]
-        action_labels = set(seg['label'] for seg in gt_segments).union(seg['label'] for seg in pred_segments)
-        action_color_map = {label: color_palette[i % len(color_palette)] for i, label in enumerate(action_labels)}
+            color_palette = [
+                (128, 0, 0), (60, 20, 220), (0, 128, 0), (128, 0, 128), (79, 69, 54),
+                (128, 128, 0), (0, 0, 128), (130, 0, 75), (34, 139, 34), (0, 85, 204),
+                (149, 146, 209), (235, 206, 135), (250, 230, 230), (191, 226, 159),
+                (185, 218, 255), (255, 204, 204), (193, 182, 255), (201, 252, 189),
+                (144, 128, 112), (112, 25, 25), (102, 51, 102), (0, 128, 128), (171, 71, 0)
+            ]
+            action_labels = set(seg['label'] for seg in gt_segments).union(seg['label'] for seg in pred_segments)
+            action_color_map = {label: color_palette[i % len(color_palette)] for i, label in enumerate(action_labels)}
 
-        gt_color_rgb = (gt_text_color[2], gt_text_color[1], gt_text_color[0])
-        pred_color_rgb = (pred_text_color[2], pred_text_color[1], pred_text_color[0])
+            gt_color_rgb = (gt_text_color[2], gt_text_color[1], gt_text_color[0])
+            pred_color_rgb = (pred_text_color[2], pred_text_color[1], pred_text_color[0])
 
-        font_path = VIS_CONFIG['video_font_path']
-        font_fallback = VIS_CONFIG['video_font_fallback']
-        font_size = int(20 * text_scale)
-        bar_font_size = int(20 * VIS_CONFIG['video_bar_text_scale'])
-        font = None
-        bar_font = None
-        if font_path:
-            try:
-                font = ImageFont.truetype(font_path, font_size)
-                bar_font = ImageFont.truetype(font_path, bar_font_size)
-            except IOError:
+            font_path = VIS_CONFIG['video_font_path']
+            font_fallback = VIS_CONFIG['video_font_fallback']
+            font_size = int(20 * text_scale)
+            bar_font_size = int(20 * VIS_CONFIG['video_bar_text_scale'])
+            font = None
+            bar_font = None
+            if font_path:
                 try:
-                    font = ImageFont.truetype(font_fallback, font_size)
-                    bar_font = ImageFont.truetype(font_fallback, bar_font_size)
+                    font = ImageFont.truetype(font_path, font_size)
+                    bar_font = ImageFont.truetype(font_path, bar_font_size)
                 except IOError:
-                    font = None
-                    bar_font = None
+                    try:
+                        font = ImageFont.truetype(font_fallback, font_size)
+                        bar_font = ImageFont.truetype(font_fallback, bar_font_size)
+                    except IOError:
+                        font = None
+                        bar_font = None
 
-        window_size = 20.0
-        num_windows = int(np.ceil(duration / window_size))
-        text_bar_gap = 48
-        text_x = 10
+            window_size = 20.0
+            num_windows = int(np.ceil(duration / window_size))
+            text_bar_gap = 48
+            text_x = 10
 
-        frame_idx = 0
-        written_frames = 0
-        while cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
-                break
+            frame_idx = 0
+            written_frames = 0
+            while cap.isOpened():
+                ret, frame = cap.read()
+                if not ret:
+                    break
 
-            extended_frame = np.zeros((output_height, frame_width, 3), dtype=np.uint8)
-            extended_frame[:frame_height, :, :] = frame
-            extended_frame[frame_height:, :, :] = 255
+                extended_frame = np.zeros((output_height, frame_width, 3), dtype=np.uint8)
+                extended_frame[:frame_height, :, :] = frame
+                extended_frame[frame_height:, :, :] = 255
 
-            timestamp = frame_idx / fps
-            window_idx = int(timestamp // window_size)
-            window_start = window_idx * window_size
-            window_end = min(window_start + window_size, duration)
-            window_duration = window_end - window_start
-            window_timestamp = timestamp - window_start
+                timestamp = frame_idx / fps
+                window_idx = int(timestamp // window_size)
+                window_start = window_idx * window_size
+                window_end = min(window_start + window_size, duration)
+                window_duration = window_end - window_start
+                window_timestamp = timestamp - window_start
 
-            gt_labels = [seg['label'] for seg in gt_segments if seg['start'] <= timestamp <= seg['end']]
-            gt_text = "GT: " + ", ".join(gt_labels) if gt_labels else ""
-            pred_labels = [seg['label'] for seg in pred_segments if seg['start'] <= timestamp <= seg['end']]
-            pred_text = "Pred: " + ", ".join(pred_labels) if pred_labels else ""
+                gt_labels = [seg['label'] for seg in gt_segments if seg['start'] <= timestamp <= seg['end']]
+                gt_text = "GT: " + ", ".join(gt_labels) if gt_labels else ""
+                pred_labels = [seg['label'] for seg in pred_segments if seg['start'] <= timestamp <= seg['end']]
+                pred_text = "Pred: " + ", ".join(pred_labels) if pred_labels else ""
 
-            footer_y = frame_height
-            gt_bar_y = footer_y + int(0.2 * footer_height)
-            pred_bar_y = footer_y + int(0.5 * footer_height)
-            bar_height = int(VIS_CONFIG['video_bar_height'] * footer_height)
+                footer_y = frame_height
+                gt_bar_y = footer_y + int(0.2 * footer_height)
+                pred_bar_y = footer_y + int(0.5 * footer_height)
+                bar_height = int(VIS_CONFIG['video_bar_height'] * footer_height)
 
-            if font:
-                gt_text_bbox = bar_font.getbbox("GT")
-                pred_text_bbox = bar_font.getbbox("Pred")
-                gt_text_width = gt_text_bbox[2] - gt_text_bbox[0]
-                pred_text_width = pred_text_bbox[2] - pred_text_bbox[0]
-            else:
-                gt_text_size, _ = cv2.getTextSize("GT", cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
-                pred_text_size, _ = cv2.getTextSize("Pred", cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
-                gt_text_width = gt_text_size[0]
-                pred_text_width = pred_text_size[0]
-            max_text_width = max(gt_text_width, pred_text_width)
-            bar_start_x = text_x + max_text_width + text_bar_gap
-            bar_width = frame_width - bar_start_x
+                if font:
+                    gt_text_bbox = bar_font.getbbox("GT")
+                    pred_text_bbox = bar_font.getbbox("Pred")
+                    gt_text_width = gt_text_bbox[2] - gt_text_bbox[0]
+                    pred_text_width = pred_text_bbox[2] - pred_text_bbox[0]
+                else:
+                    gt_text_size, _ = cv2.getTextSize("GT", cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
+                    pred_text_size, _ = cv2.getTextSize("Pred", cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
+                    gt_text_width = gt_text_size[0]
+                    pred_text_width = pred_text_size[0]
+                max_text_width = max(gt_text_width, pred_text_width)
+                bar_start_x = text_x + max_text_width + text_bar_gap
+                bar_width = frame_width - bar_start_x
 
-            for seg in gt_segments:
-                if seg['start'] <= window_end and seg['end'] >= window_start:
-                    start_t = max(seg['start'], window_start)
-                    end_t = min(seg['end'], window_start + window_timestamp)
-                    start_x = bar_start_x + int(((start_t - window_start) / window_duration) * bar_width)
-                    end_x = bar_start_x + int(((end_t - window_start) / window_duration) * bar_width)
-                    if end_x > start_x:
-                        cv2.rectangle(
-                            extended_frame,
-                            (start_x, gt_bar_y),
-                            (end_x, gt_bar_y + bar_height),
-                            action_color_map[seg['label']],
-                            -1
-                        )
+                for seg in gt_segments:
+                    if seg['start'] <= window_end and seg['end'] >= window_start:
+                        start_t = max(seg['start'], window_start)
+                        end_t = min(seg['end'], window_start + window_timestamp)
+                        start_x = bar_start_x + int(((start_t - window_start) / window_duration) * bar_width)
+                        end_x = bar_start_x + int(((end_t - window_start) / window_duration) * bar_width)
+                        if end_x > start_x:
+                            cv2.rectangle(
+                                extended_frame,
+                                (start_x, gt_bar_y),
+                                (end_x, gt_bar_y + bar_height),
+                                action_color_map[seg['label']],
+                                -1
+                            )
 
-            for seg in pred_segments:
-                if seg['start'] <= window_end and seg['end'] >= window_start:
-                    start_t = max(seg['start'], window_start)
-                    end_t = min(seg['end'], window_start + window_timestamp)
-                    start_x = bar_start_x + int(((start_t - window_start) / window_duration) * bar_width)
-                    end_x = bar_start_x + int(((end_t - window_start) / window_duration) * bar_width)
-                    if end_x > start_x:
-                        cv2.rectangle(
-                            extended_frame,
-                            (start_x, pred_bar_y),
-                            (end_x, pred_bar_y + bar_height),
-                            action_color_map[seg['label']],
-                            -1
-                        )
+                for seg in pred_segments:
+                    if seg['start'] <= window_end and seg['end'] >= window_start:
+                        start_t = max(seg['start'], window_start)
+                        end_t = min(seg['end'], window_start + window_timestamp)
+                        start_x = bar_start_x + int(((start_t - window_start) / window_duration) * bar_width)
+                        end_x = bar_start_x + int(((end_t - window_start) / window_duration) * bar_width)
+                        if end_x > start_x:
+                            cv2.rectangle(
+                                extended_frame,
+                                (start_x, pred_bar_y),
+                                (end_x, pred_bar_y + bar_height),
+                                action_color_map[seg['label']],
+                                -1
+                            )
 
-            if font:
-                frame_rgb = cv2.cvtColor(extended_frame, cv2.COLOR_BGR2RGB)
-                pil_image = Image.fromarray(frame_rgb)
-                draw = ImageDraw.Draw(pil_image)
-                frame_info = f"Frame: {frame_idx} | FPS: {fps:.2f}"
-                frame_text_bbox = draw.textbbox((0, 0), frame_info, font=font)
-                frame_text_width = frame_text_bbox[2] - frame_text_bbox[0]
-                frame_text_x = (frame_width - frame_text_width) // 2
-                draw.text((frame_text_x, 10), frame_info, font=font, fill=(0, 0, 0))
-                window_info = f"{window_start:.1f}s - {window_end:.1f}s"
-                window_text_bbox = draw.textbbox((0, 0), window_info, font=bar_font)
-                window_text_width = window_text_bbox[2] - window_text_bbox[0]
-                window_text_x = (frame_width - window_text_width) // 2
-                draw.text((window_text_x, footer_y + 10), window_info, font=bar_font, fill=(0, 0, 0))
-                if gt_text:
-                    gt_y = int(frame_height * VIS_CONFIG['video_gt_text_y'])
-                    draw.text((10, gt_y), gt_text, font=font, fill=gt_color_rgb)
-                if pred_text:
-                    pred_y = int(frame_height * VIS_CONFIG['video_pred_text_y'])
-                    draw.text((10, pred_y), pred_text, font=font, fill=pred_color_rgb)
-                draw.text((text_x, gt_bar_y + bar_height // 2), "GT", font=bar_font, fill=gt_color_rgb)
-                draw.text((text_x, pred_bar_y + bar_height // 2), "Pred", font=bar_font, fill=pred_color_rgb)
-                extended_frame = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-            else:
-                frame_info = f"Frame: {frame_idx} | FPS: {fps:.2f}"
-                text_size, _ = cv2.getTextSize(frame_info, cv2.FONT_HERSHEY_DUPLEX, text_scale, text_thickness)
-                frame_text_x = (frame_width - text_size[0]) // 2
-                cv2.putText(
-                    extended_frame,
-                    frame_info,
-                    (frame_text_x, 30),
-                    cv2.FONT_HERSHEY_DUPLEX,
-                    text_scale,
-                    (0, 0, 0),
-                    text_thickness,
-                    cv2.LINE_AA
-                )
-                window_info = f"{window_start:.1f}s - {window_end:.1f}s"
-                window_text_size, _ = cv2.getTextSize(window_info, cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
-                window_text_x = (frame_width - window_text_size[0]) // 2
-                cv2.putText(
-                    extended_frame,
-                    window_info,
-                    (window_text_x, footer_y + 20),
-                    cv2.FONT_HERSHEY_DUPLEX,
-                    VIS_CONFIG['video_bar_text_scale'],
-                    (0, 0, 0),
-                    1,
-                    cv2.LINE_AA
-                )
-                if gt_text:
+                if font:
+                    frame_rgb = cv2.cvtColor(extended_frame, cv2.COLOR_BGR2RGB)
+                    pil_image = Image.fromarray(frame_rgb)
+                    draw = ImageDraw.Draw(pil_image)
+                    frame_info = f"Frame: {frame_idx} | FPS: {fps:.2f}"
+                    frame_text_bbox = draw.textbbox((0, 0), frame_info, font=font)
+                    frame_text_width = frame_text_bbox[2] - frame_text_bbox[0]
+                    frame_text_x = (frame_width - frame_text_width) // 2
+                    draw.text((frame_text_x, 10), frame_info, font=font, fill=(0, 0, 0))
+                    window_info = f"{window_start:.1f}s - {window_end:.1f}s"
+                    window_text_bbox = draw.textbbox((0, 0), window_info, font=bar_font)
+                    window_text_width = window_text_bbox[2] - window_text_bbox[0]
+                    window_text_x = (frame_width - window_text_width) // 2
+                    draw.text((window_text_x, footer_y + 10), window_info, font=bar_font, fill=(0, 0, 0))
+                    if gt_text:
+                        gt_y = int(frame_height * VIS_CONFIG['video_gt_text_y'])
+                        draw.text((10, gt_y), gt_text, font=font, fill=gt_color_rgb)
+                    if pred_text:
+                        pred_y = int(frame_height * VIS_CONFIG['video_pred_text_y'])
+                        draw.text((10, pred_y), pred_text, font=font, fill=pred_color_rgb)
+                    draw.text((text_x, gt_bar_y + bar_height // 2), "GT", font=bar_font, fill=gt_color_rgb)
+                    draw.text((text_x, pred_bar_y + bar_height // 2), "Pred", font=bar_font, fill=pred_color_rgb)
+                    extended_frame = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
+                else:
+                    frame_info = f"Frame: {frame_idx} | FPS: {fps:.2f}"
+                    text_size, _ = cv2.getTextSize(frame_info, cv2.FONT_HERSHEY_DUPLEX, text_scale, text_thickness)
+                    frame_text_x = (frame_width - text_size[0]) // 2
                     cv2.putText(
                         extended_frame,
-                        gt_text,
-                        (10, int(frame_height * VIS_CONFIG['video_gt_text_y'])),
+                        frame_info,
+                        (frame_text_x, 30),
                         cv2.FONT_HERSHEY_DUPLEX,
                         text_scale,
+                        (0, 0, 0),
+                        text_thickness,
+                        cv2.LINE_AA
+                    )
+                    window_info = f"{window_start:.1f}s - {window_end:.1f}s"
+                    window_text_size, _ = cv2.getTextSize(window_info, cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
+                    window_text_x = (frame_width - window_text_size[0]) // 2
+                    cv2.putText(
+                        extended_frame,
+                        window_info,
+                        (window_text_x, footer_y + 20),
+                        cv2.FONT_HERSHEY_DUPLEX,
+                        VIS_CONFIG['video_bar_text_scale'],
+                        (0, 0, 0),
+                        1,
+                        cv2.LINE_AA
+                    )
+                    if gt_text:
+                        cv2.putText(
+                            extended_frame,
+                            gt_text,
+                            (10, int(frame_height * VIS_CONFIG['video_gt_text_y'])),
+                            cv2.FONT_HERSHEY_DUPLEX,
+                            text_scale,
+                            gt_text_color,
+                            text_thickness,
+                            cv2.LINE_AA
+                        )
+                    if pred_text:
+                        cv2.putText(
+                            extended_frame,
+                            pred_text,
+                            (10, int(frame_height * VIS_CONFIG['video_pred_text_y'])),
+                            cv2.FONT_HERSHEY_DUPLEX,
+                            text_scale,
+                            pred_text_color,
+                            text_thickness,
+                            cv2.LINE_AA
+                        )
+                    cv2.putText(
+                        extended_frame,
+                        "GT",
+                        (text_x, gt_bar_y + bar_height // 2 + 5),
+                        cv2.FONT_HERSHEY_DUPLEX,
+                        VIS_CONFIG['video_bar_text_scale'],
                         gt_text_color,
-                        text_thickness,
+                        1,
                         cv2.LINE_AA
                     )
-                if pred_text:
                     cv2.putText(
                         extended_frame,
-                        pred_text,
-                        (10, int(frame_height * VIS_CONFIG['video_pred_text_y'])),
+                        "Pred",
+                        (text_x, pred_bar_y + bar_height // 2 + 5),
                         cv2.FONT_HERSHEY_DUPLEX,
-                        text_scale,
+                        VIS_CONFIG['video_bar_text_scale'],
                         pred_text_color,
-                        text_thickness,
+                        1,
                         cv2.LINE_AA
                     )
-                cv2.putText(
-                    extended_frame,
-                    "GT",
-                    (text_x, gt_bar_y + bar_height // 2 + 5),
-                    cv2.FONT_HERSHEY_DUPLEX,
-                    VIS_CONFIG['video_bar_text_scale'],
-                    gt_text_color,
-                    1,
-                    cv2.LINE_AA
-                )
-                cv2.putText(
-                    extended_frame,
-                    "Pred",
-                    (text_x, pred_bar_y + bar_height // 2 + 5),
-                    cv2.FONT_HERSHEY_DUPLEX,
-                    VIS_CONFIG['video_bar_text_scale'],
-                    pred_text_color,
-                    1,
-                    cv2.LINE_AA
-                )
 
-            out.write(extended_frame)
-            written_frames += 1
-            frame_idx += 1
+                out.write(extended_frame)
+                written_frames += 1
+                frame_idx += 1
 
-        cap.release()
-        out.release()
-        print(f"[✅ Saved Annotated Video]: {output_path}, Written Frames={written_frames}")
-        return output_path
+            cap.release()
+            out.release()
+            print(f"[✅ Saved Annotated Video]: {output_path}, Written Frames={written_frames}")
+            if task_id:
+                self.task_status[task_id] = "completed"
+            return output_path
+        except Exception as e:
+            if task_id:
+                self.task_status[task_id] = "failed"
+            raise e
 
     def visualize_action_lengths(
         self,
@@ -369,99 +386,109 @@ class ActionDetectionModel:
         video_path: str,
         duration: float,
         save_dir: str = VIS_CONFIG['save_dir'],
-        frame_interval: float = VIS_CONFIG['frame_interval']
+        frame_interval: float = VIS_CONFIG['frame_interval'],
+        task_id: Optional[str] = None
     ) -> str:
         os.makedirs(save_dir, exist_ok=True)
-        num_frames = int(duration / frame_interval) + 1
-        if num_frames > VIS_CONFIG['max_frames']:
-            frame_interval = duration / (VIS_CONFIG['max_frames'] - 1)
-            num_frames = VIS_CONFIG['max_frames']
-            print(f"Warning: Adjusted frame_interval to {frame_interval:.2f}s.")
+        if task_id:
+            self.task_status[task_id] = "processing"
+        try:
+            num_frames = int(duration / frame_interval) + 1
+            if num_frames > VIS_CONFIG['max_frames']:
+                frame_interval = duration / (VIS_CONFIG['max_frames'] - 1)
+                num_frames = VIS_CONFIG['max_frames']
+                print(f"Warning: Adjusted frame_interval to {frame_interval:.2f}s.")
 
-        frame_times = np.linspace(0, duration, num_frames, endpoint=False)
-        frames = []
-        cap = cv2.VideoCapture(video_path)
-        if not cap.isOpened():
-            print(f"Warning: Could not open video {video_path}. Using placeholder frames.")
-            frames = [np.ones((100, 100, 3), dtype=np.uint8) * 255 for _ in frame_times]
-        else:
-            for t in frame_times:
-                cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
-                ret, frame = cap.read()
-                if ret:
-                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    frame = cv2.resize(frame, (int(frame.shape[1] * 0.5), int(frame.shape[0] * 0.5)))
-                    frames.append(frame)
-                else:
-                    frames.append(np.ones((100, 100, 3), dtype=np.uint8) * 255)
-            cap.release()
+            frame_times = np.linspace(0, duration, num_frames, endpoint=False)
+            frames = []
+            cap = cv2.VideoCapture(video_path)
+            if not cap.isOpened():
+                print(f"Warning: Could not open video {video_path}. Using placeholder frames.")
+                frames = [np.ones((100, 100, 3), dtype=np.uint8) * 255 for _ in frame_times]
+            else:
+                for t in frame_times:
+                    cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
+                    ret, frame = cap.read()
+                    if ret:
+                        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        frame = cv2.resize(frame, (int(frame.shape[1] * 0.5), int(frame.shape[0] * 0.5)))
+                        frames.append(frame)
+                    else:
+                        frames.append(np.ones((100, 100, 3), dtype=np.uint8) * 255)
+                cap.release()
 
-        fig = plt.figure(figsize=(num_frames * VIS_CONFIG['frame_scale_factor'], 6), constrained_layout=True)
-        gs = fig.add_gridspec(3, num_frames, height_ratios=[3, 1, 1])
+            fig = plt.figure(figsize=(num_frames * VIS_CONFIG['frame_scale_factor'], 6), constrained_layout=True)
+            gs = fig.add_gridspec(3, num_frames, height_ratios=[3, 1, 1])
 
-        for i, (t, frame) in enumerate(zip(frame_times, frames)):
-            ax = fig.add_subplot(gs[0, i])
-            gt_hit = any(seg['start'] <= t <= seg['end'] for seg in gt_segments)
-            pred_hit = any(seg['start'] <= t <= seg['end'] for seg in pred_segments)
-            border_color = None
-            if gt_hit and pred_hit:
-                border_color = VIS_CONFIG['frame_highlight_both']
-            elif gt_hit:
-                border_color = VIS_CONFIG['frame_highlight_gt']
-            elif pred_hit:
-                border_color = VIS_CONFIG['frame_highlight_pred']
-            ax.imshow(frame)
-            ax.axis('off')
-            if border_color:
-                for spine in ax.spines.values():
-                    spine.set_edgecolor(border_color)
-                    spine.set_linewidth(2)
-            ax.set_title(f"{t:.1f}s", fontsize=VIS_CONFIG['fontsize_label'],
-                         color=border_color if border_color else 'black')
+            for i, (t, frame) in enumerate(zip(frame_times, frames)):
+                ax = fig.add_subplot(gs[0, i])
+                gt_hit = any(seg['start'] <= t <= seg['end'] for seg in gt_segments)
+                pred_hit = any(seg['start'] <= t <= seg['end'] for seg in pred_segments)
+                border_color = None
+                if gt_hit and pred_hit:
+                    border_color = VIS_CONFIG['frame_highlight_both']
+                elif gt_hit:
+                    border_color = VIS_CONFIG['frame_highlight_gt']
+                elif pred_hit:
+                    border_color = VIS_CONFIG['frame_highlight_pred']
+                ax.imshow(frame)
+                ax.axis('off')
+                if border_color:
+                    for spine in ax.spines.values():
+                        spine.set_edgecolor(border_color)
+                        spine.set_linewidth(2)
+                ax.set_title(f"{t:.1f}s", fontsize=VIS_CONFIG['fontsize_label'],
+                             color=border_color if border_color else 'black')
 
-        ax_gt = fig.add_subplot(gs[1, :])
-        ax_gt.set_xlim(0, duration)
-        ax_gt.set_ylim(0, 1)
-        ax_gt.axis('off')
-        ax_gt.text(-0.02 * duration, 0.5, "Ground Truth", fontsize=VIS_CONFIG['fontsize_title'],
-                   va='center', ha='right', weight='bold')
-        for seg in gt_segments:
-            start, end = seg['start'], seg['end']
-            width = end - start
-            label = seg['label'][:10] + '...' if len(seg['label']) > 10 else seg['label']
-            ax_gt.add_patch(patches.Rectangle(
-                (start, 0.3), width, 0.4, facecolor=VIS_CONFIG['gt_color'],
-                edgecolor='black', alpha=0.8
-            ))
-            ax_gt.text((start + end) / 2, 0.5, label, ha='center', va='center',
-                       fontsize=VIS_CONFIG['fontsize_label'], color='white')
-            ax_gt.text(start, 0.2, f"{start:.1f}", ha='center', fontsize=8, color='black')
-            ax_gt.text(end, 0.2, f"{end:.1f}", ha='center', fontsize=8, color='black')
+            ax_gt = fig.add_subplot(gs[1, :])
+            ax_gt.set_xlim(0, duration)
+            ax_gt.set_ylim(0, 1)
+            ax_gt.axis('off')
+            ax_gt.text(-0.02 * duration, 0.5, "Ground Truth", fontsize=VIS_CONFIG['fontsize_title'],
+                       va='center', ha='right', weight='bold')
+            for seg in gt_segments:
+                start, end = seg['start'], seg['end']
+                width = end - start
+                label = seg['label'][:10] + '...' if len(seg['label']) > 10 else seg['label']
+                ax_gt.add_patch(patches.Rectangle(
+                    (start, 0.3), width, 0.4, facecolor=VIS_CONFIG['gt_color'],
+                    edgecolor='black', alpha=0.8
+                ))
+                ax_gt.text((start + end) / 2, 0.5, label, ha='center', va='center',
+                           fontsize=VIS_CONFIG['fontsize_label'], color='white')
+                ax_gt.text(start, 0.2, f"{start:.1f}", ha='center', fontsize=8, color='black')
+                ax_gt.text(end, 0.2, f"{end:.1f}", ha='center', fontsize=8, color='black')
 
-        ax_pred = fig.add_subplot(gs[2, :])
-        ax_pred.set_xlim(0, duration)
-        ax_pred.set_ylim(0, 1)
-        ax_pred.axis('off')
-        ax_pred.text(-0.02 * duration, 0.5, "Prediction", fontsize=VIS_CONFIG['fontsize_title'],
-                     va='center', ha='right', weight='bold')
-        for seg in pred_segments:
-            start, end = seg['start'], seg['end']
-            width = end - start
-            label = seg['label'][:10] + '...' if len(seg['label']) > 10 else seg['label']
-            ax_pred.add_patch(patches.Rectangle(
-                (start, 0.3), width, 0.4, facecolor=VIS_CONFIG['pred_color'],
-                edgecolor='black', alpha=0.8
-            ))
-            ax_pred.text((start + end) / 2, 0.5, label, ha='center', va='center',
-                         fontsize=VIS_CONFIG['fontsize_label'], color='white')
-            ax_pred.text(start, 0.8, f"{start:.1f}", ha='center', fontsize=8, color='black')
-            ax_pred.text(end, 0.8, f"{end:.1f}", ha='center', fontsize=8, color='black')
+            ax_pred = fig.add_subplot(gs[2, :])
+            ax_pred.set_xlim(0, duration)
+            ax_pred.set_ylim(0, 1)
+            ax_pred.axis('off')
+            ax_pred.text(-0.02 * duration, 0.5, "Prediction", fontsize=VIS_CONFIG['fontsize_title'],
+                         va='center', ha='right', weight='bold')
+            for seg in pred_segments:
+                start, end = seg['start'], seg['end']
+                width = end - start
+                label = seg['label'][:10] + '...' if len(seg['label']) > 10 else seg['label']
+                ax_pred.add_patch(patches.Rectangle(
+                    (start, 0.3), width, 0.4, facecolor=VIS_CONFIG['pred_color'],
+                    edgecolor='black', alpha=0.8
+                ))
+                ax_pred.text((start + end) / 2, 0.5, label, ha='center', va='center',
+                             fontsize=VIS_CONFIG['fontsize_label'], color='white')
+                ax_pred.text(start, 0.8, f"{start:.1f}", ha='center', fontsize=8, color='black')
+                ax_pred.text(end, 0.8, f"{end:.1f}", ha='center', fontsize=8, color='black')
 
-        jpg_path = os.path.join(save_dir, f"viz_{video_id}_{self.opt['exp']}.png")
-        plt.savefig(jpg_path, dpi=100, bbox_inches='tight')
-        plt.close()
-        print(f"[✅ Saved Visualization]: {jpg_path}")
-        return jpg_path
+            jpg_path = os.path.join(save_dir, f"viz_{video_id}_{self.opt['exp']}.png")
+            plt.savefig(jpg_path, dpi=100, bbox_inches='tight')
+            plt.close()
+            print(f"[✅ Saved Visualization]: {jpg_path}")
+            if task_id:
+                self.task_status[task_id] = "completed"
+            return jpg_path
+        except Exception as e:
+            if task_id:
+                self.task_status[task_id] = "failed"
+            raise e
 
     def eval_frame(self, dataset):
         test_loader = torch.utils.data.DataLoader(dataset,
@@ -620,7 +647,38 @@ class ActionDetectionModel:
 
         return result_dict
 
-    async def predict(self, input_data: VideoInput) -> VideoPrediction:
+    async def generate_visualizations(self, video_name: str, pred_segments: List[Dict], gt_segments: List[Dict], video_path: str, duration: float, task_id: str):
+        """Generate visualizations and annotated video in the background"""
+        try:
+            visualization_path = self.visualize_action_lengths(
+                video_id=video_name,
+                pred_segments=pred_segments,
+                gt_segments=gt_segments,
+                video_path=video_path,
+                duration=duration,
+                task_id=f"viz_{task_id}"
+            )
+            video_output_path = self.annotate_video_with_actions(
+                video_id=video_name,
+                pred_segments=pred_segments,
+                gt_segments=gt_segments,
+                video_path=video_path,
+                task_id=f"video_{task_id}"
+            )
+            self.task_status[task_id] = {
+                "visualization_path": visualization_path,
+                "video_output_path": video_output_path,
+                "status": "completed"
+            }
+        except Exception as e:
+            self.task_status[task_id] = {
+                "visualization_path": None,
+                "video_output_path": None,
+                "status": "failed",
+                "error": str(e)
+            }
+
+    async def predict(self, input_data: VideoInput, background_tasks: BackgroundTasks) -> VideoPrediction:
         if not self.model:
             raise HTTPException(status_code=400, detail="Model is not loaded")
         input_data = input_data.dict()
@@ -640,9 +698,7 @@ class ActionDetectionModel:
         else:
             raise HTTPException(status_code=400, detail=f"Invalid pptype: {self.opt['pptype']}")
 
-        # Modified: Handle mAP as an array and compute the average
         mAP_result = evaluation_detection(self.opt)
-        # Assuming mAP_result is an array of mAP values; take the mean
         mAP = float(np.mean(mAP_result)) if isinstance(mAP_result, (list, np.ndarray)) else float(mAP_result)
 
         video_anno_file = self.opt["video_anno"].format(self.opt["split"])
@@ -706,32 +762,44 @@ class ActionDetectionModel:
             "avg_iou": float(avg_iou)
         }
 
-        visualization_path = None
-        video_output_path = None
+        # Generate a unique task ID
+        import uuid
+        task_id = str(uuid.uuid4())
+
+        # Schedule visualization and video annotation in the background
         if os.path.exists(video_path):
-            visualization_path = self.visualize_action_lengths(
-                video_id=video_name,
+            background_tasks.add_task(
+                self.generate_visualizations,
+                video_name=video_name,
                 pred_segments=pred_segments,
                 gt_segments=gt_segments,
                 video_path=video_path,
-                duration=duration
+                duration=duration,
+                task_id=task_id
             )
-            video_output_path = self.annotate_video_with_actions(
-                video_id=video_name,
-                pred_segments=pred_segments,
-                gt_segments=gt_segments,
-                video_path=video_path
-            )
+            self.task_status[task_id] = {
+                "visualization_path": None,
+                "video_output_path": None,
+                "status": "pending"
+            }
 
         return VideoPrediction(
             video_name=video_name,
             pred_segments=[Segment(**seg) for seg in pred_segments],
             gt_segments=[Segment(**{k: v for k, v in seg.items() if k != 'score'}) for seg in gt_segments],
             summary=summary,
-            mAP=mAP,  # Use the scalar mAP value
-            visualization_path=visualization_path,
-            video_output_path=video_output_path
+            mAP=mAP,
+            visualization_path=None,
+            video_output_path=None,
+            video_task_id=task_id if os.path.exists(video_path) else None
         )
+
+    async def get_task_status(self, task_id: str) -> Dict:
+        """Retrieve the status of a background visualization task"""
+        status = self.task_status.get(task_id, None)
+        if not status:
+            raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
+        return status
 
 # Initialize FastAPI app
 app = FastAPI(title="Action Detection API")
@@ -793,11 +861,32 @@ async def predict(prediction: VideoPrediction = Depends(action_model.predict)):
             "avg_iou": 0.85
         },
         "mAP": 0.75,
-        "visualization_path": "output/visualizations/viz_example_video_exp.png",
-        "video_output_path": "output/videos/annotated_example_video_exp.avi"
+        "visualization_path": null,
+        "video_output_path": null,
+        "video_task_id": "550e8400-e29b-41d4-a716-446655440000"
     }
     """
     return prediction
+
+@app.get("/task_status/{task_id}")
+async def task_status(task_status: Dict = Depends(action_model.get_task_status)):
+    """
+    Check the status of a background visualization task.
+
+    Example response:
+    {
+        "visualization_path": "output/visualizations/viz_example_video_exp.png",
+        "video_output_path": "output/videos/annotated_example_video_exp.avi",
+        "status": "completed"
+    }
+    or
+    {
+        "visualization_path": null,
+        "video_output_path": null,
+        "status": "pending"
+    }
+    """
+    return task_status
 
 @app.get("/download/{file_type}/{file_name}")
 async def download_file(file_type: str, file_name: str):
