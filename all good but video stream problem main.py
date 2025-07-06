@@ -1,4 +1,3 @@
-
 import os
 import json
 import torch
@@ -19,18 +18,17 @@ from functools import *
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import cv2
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional
 from PIL import Image, ImageDraw, ImageFont
 import warnings
 import uvicorn
-from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, Request
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, StreamingResponse, HTMLResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 import nest_asyncio
 from pyngrok import ngrok
 import uuid
-import re
 
 # Visualization Configuration
 VIS_CONFIG = {
@@ -102,77 +100,6 @@ class TaskStatus(BaseModel):
     status: str
     error: Optional[str] = None
 
-# HTML template for video player
-VIDEO_PLAYER_HTML = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Action Detection Video Player</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .video-container {
-            max-width: 800px;
-            width: 100%;
-        }
-        video {
-            width: 100%;
-            border: 2px solid #333;
-            border-radius: 8px;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .controls {
-            margin-top: 10px;
-            text-align: center;
-        }
-        button {
-            padding: 10px 20px;
-            margin: 0 5px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <h1>Action Detection Video: {video_name}</h1>
-    <div class="video-container">
-        <video controls>
-            <source src="{stream_url}" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-        <div classzas="controls">
-            <button onclick="seek(-10)">Rewind 10s</button>
-            <button onclick="seek(10)">Forward 10s</button>
-        </div>
-    </div>
-    <script>
-        const video = document.querySelector('video');
-        function seek(seconds) {{
-            video.currentTime += seconds;
-        }}
-    </script>
-</body>
-</html>
-"""
-
 # Action Detection Model Class
 class ActionDetectionModel:
     def __init__(self, opt):
@@ -234,8 +161,8 @@ class ActionDetectionModel:
 
             footer_height = VIS_CONFIG['video_footer_height']
             output_height = frame_height + footer_height
-            output_path = os.path.join(save_dir, f"annotated_{video_id}_{self.opt['exp']}.mp4")
-            fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Use mp4v for MP4 output
+            output_path = os.path.join(save_dir, f"annotated_{video_id}_{self.opt['exp']}.avi")
+            fourcc = cv2.VideoWriter_fourcc(*'XVID')
             out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, output_height))
 
             if not out.isOpened():
@@ -319,7 +246,7 @@ class ActionDetectionModel:
                     pred_text_width = pred_text_bbox[2] - pred_text_bbox[0]
                 else:
                     gt_text_size, _ = cv2.getTextSize("GT", cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
-                    pred_text_size, _ = cv2.getTextSize("Pred", cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
+                    pred_text_size, _ = cv2.getTextSize("Pred", action_model, cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
                     gt_text_width = gt_text_size[0]
                     pred_text_width = pred_text_size[0]
                 max_text_width = max(gt_text_width, pred_text_width)
@@ -898,64 +825,6 @@ class ActionDetectionModel:
             raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
         return TaskStatus(**status)
 
-    def stream_file(self, file_type: str, file_name: str, range_header: Optional[str] = None) -> Tuple[StreamingResponse, dict]:
-        """
-        Stream a video or visualization file with range-based streaming support.
-        """
-        if file_type not in ["visualizations", "videos"]:
-            raise HTTPException(status_code=400, detail="Invalid file_type. Use 'visualizations' or 'videos'.")
-        
-        file_path = os.path.join("output", file_type, file_name)
-        if not os.path.exists(file_path):
-            raise HTTPException(status_code=404, detail=f"File {file_path} not found.")
-        
-        file_size = os.stat(file_path).st_size
-        media_type = "video/mp4" if file_type == "videos" else "image/png"
-        headers = {
-            "Accept-Ranges": "bytes",
-            "Content-Disposition": f'inline; filename="{file_name}"',
-            "Cache-Control": "public, max-age=3600"  # Cache for 1 hour
-        }
-
-        # Handle range requests
-        start = 0
-        end = file_size - 1
-        status_code = 200
-
-        if range_header:
-            range_match = re.match(r"bytes=(\d+)-(\d*)", range_header)
-            if range_match:
-                start = int(range_match.group(1))
-                end_str = range_match.group(2)
-                end = int(end_str) if end_str else file_size - 1
-                if start >= file_size or end >= file_size or start > end:
-                    raise HTTPException(
-                        status_code=416,
-                        detail="Requested Range Not Satisfiable"
-                    )
-                headers["Content-Range"] = f"bytes {start}-{end}/{file_size}"
-                headers["Content-Length"] = str(end - start + 1)
-                status_code = 206  # Partial Content
-
-        def iterfile():
-            with open(file_path, mode="rb") as file_like:
-                file_like.seek(start)
-                remaining = end - start + 1
-                chunk_size = 1024 * 1024  # 1MB chunks
-                while remaining > 0:
-                    chunk = file_like.read(min(chunk_size, remaining))
-                    if not chunk:
-                        break
-                    yield chunk
-                    remaining -= len(chunk)
-
-        return StreamingResponse(
-            iterfile(),
-            media_type=media_type,
-            headers=headers,
-            status_code=status_code
-        ), headers
-
 # Initialize FastAPI app
 app = FastAPI(title="Action Detection API")
 
@@ -1031,42 +900,39 @@ async def task_status(task_status: TaskStatus = Depends(action_model.get_task_st
     Example response:
     {
         "visualization_path": "output/visualizations/viz_example_video_exp.png",
-        "video_output_path": "output/videos/annotated_example_video_exp.mp4",
+        "video_output_path": "output/videos/annotated_example_video_exp.avi",
         "visualization_stream_url": "https://<ngrok-id>.ngrok.io/stream/visualizations/viz_example_video_exp.png",
-        "video_stream_url": "https://<ngrok-id>.ngrok.io/stream/videos/annotated_example_video_exp.mp4",
+        "video_stream_url": "https://<ngrok-id>.ngrok.io/stream/videos/annotated_example_video_exp.avi",
         "status": "completed"
     }
     """
     return task_status
 
 @app.get("/stream/{file_type}/{file_name}")
-async def stream_file(file_type: str, file_name: str, request: Request):
+async def stream_file(file_type: str, file_name: str):
     """
-    Stream a video or visualization file with range-based streaming support.
-    
-    Example:
-        GET /stream/videos/annotated_example_video_exp.mp4
-        Headers: Range: bytes=0-1048576
+    Stream a video or visualization file.
     """
-    response, headers = action_model.stream_file(file_type, file_name, request.headers.get("Range"))
-    return response
-
-@app.get("/watch/{video_name}", response_class=HTMLResponse)
-async def watch_video(video_name: str):
-    """
-    Serve an HTML page with a video player for the annotated video.
-    
-    Example:
-        GET /watch/example_video
-    """
-    file_name = f"annotated_{video_name}_{action_model.opt['exp']}.mp4"
-    file_path = os.path.join("output", "videos", file_name)
+    if file_type not in ["visualizations", "videos"]:
+        raise HTTPException(status_code=400, detail="Invalid file_type. Use 'visualizations' or 'videos'.")
+    file_path = os.path.join("output", file_type, file_name)
     if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail=f"Video {file_name} not found")
+        raise HTTPException(status_code=404, detail=f"File {file_path} not found.")
     
-    stream_url = f"{action_model.base_url}/stream/videos/{file_name}"
-    html_content = VIDEO_PLAYER_HTML.format(video_name=video_name, stream_url=stream_url)
-    return HTMLResponse(content=html_content)
+    def iterfile():
+        with open(file_path, mode="rb") as file_like:
+            while chunk := file_like.read(1024 * 1024):  # Read 1MB chunks
+                yield chunk
+    
+    media_type = "video/x-msvideo" if file_type == "videos" else "image/png"
+    return StreamingResponse(
+        iterfile(),
+        media_type=media_type,
+        headers={
+            "Accept-Ranges": "bytes",
+            "Content-Disposition": f'inline; filename="{file_name}"'
+        }
+    )
 
 @app.get("/download/{file_type}/{file_name}")
 async def download_file(file_type: str, file_name: str):
