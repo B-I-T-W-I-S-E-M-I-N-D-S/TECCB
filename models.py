@@ -99,7 +99,7 @@ class HistoryUnit(torch.nn.Module):
 
 
 class MYNET(torch.nn.Module):
-    def __init__(self, opt):
+    def __init__(self, opt, video_name):
         super(MYNET, self).__init__()
         self.n_feature=opt["feat_dim"] 
         n_class=opt["num_of_class"]
@@ -118,88 +118,137 @@ class MYNET(torch.nn.Module):
         dropout=0.3
         self.best_loss=1000000
         self.best_map=0
-
-        self.feature_reduction_rgb = nn.Linear(self.n_feature//2, n_embedding_dim//2)
-        self.feature_reduction_flow = nn.Linear(self.n_feature//2, n_embedding_dim//2)
-        
-        self.positional_encoding = PositionalEncoding(n_embedding_dim, dropout, maxlen=400)      
-        
-        self.encoder = nn.TransformerEncoder(
-                                            nn.TransformerEncoderLayer(d_model=n_embedding_dim, 
-                                                                        nhead=n_enc_head, 
-                                                                        dropout=dropout, 
-                                                                        activation='gelu'), 
-                                            n_enc_layer, 
-                                            nn.LayerNorm(n_embedding_dim))
-                                            
-        self.decoder = nn.TransformerDecoder(
-                                            nn.TransformerDecoderLayer(d_model=n_embedding_dim, 
-                                                                        nhead=n_dec_head, 
-                                                                        dropout=dropout, 
-                                                                        activation='gelu'), 
-                                            n_dec_layer, 
-                                            nn.LayerNorm(n_embedding_dim))  
-
-        self.history_unit = HistoryUnit(opt)
-
-
-        self.history_anchor_decoder_block1 = nn.TransformerDecoder(
-                                            nn.TransformerDecoderLayer(d_model=n_embedding_dim, 
-                                                                        nhead=n_comb_dec_head, 
-                                                                        dropout=dropout, 
-                                                                        activation='gelu'), 
-                                            n_comb_dec_layer, 
-                                            nn.LayerNorm(n_embedding_dim))  
+        self.video_name = video_name
+        if video_name.startswith("video"):
+            self.feature_reduction_rgb = nn.Linear(self.n_feature//2, n_embedding_dim//2)
+            self.feature_reduction_flow = nn.Linear(self.n_feature//2, n_embedding_dim//2)
             
+            self.positional_encoding = PositionalEncoding(n_embedding_dim, dropout, maxlen=400)      
+            
+            self.encoder = nn.TransformerEncoder(
+                                                nn.TransformerEncoderLayer(d_model=n_embedding_dim, 
+                                                                            nhead=n_enc_head, 
+                                                                            dropout=dropout, 
+                                                                            activation='gelu'), 
+                                                n_enc_layer, 
+                                                nn.LayerNorm(n_embedding_dim))
+                                                
+            self.decoder = nn.TransformerDecoder(
+                                                nn.TransformerDecoderLayer(d_model=n_embedding_dim, 
+                                                                            nhead=n_dec_head, 
+                                                                            dropout=dropout, 
+                                                                            activation='gelu'), 
+                                                n_dec_layer, 
+                                                nn.LayerNorm(n_embedding_dim))                            
+            self.classifier = nn.Sequential(nn.Linear(n_embedding_dim,n_embedding_dim), nn.ReLU(), nn.Linear(n_embedding_dim,n_class))
+            self.regressor = nn.Sequential(nn.Linear(n_embedding_dim,n_embedding_dim), nn.ReLU(), nn.Linear(n_embedding_dim,2))                               
+            
+            self.decoder_token = nn.Parameter(torch.zeros(len(self.anchors), 1, n_embedding_dim))
+            self.relu = nn.ReLU(True)
+            self.softmaxd1 = nn.Softmax(dim=-1)
+        else:
+            self.feature_reduction_rgb = nn.Linear(self.n_feature//2, n_embedding_dim//2)
+            self.feature_reduction_flow = nn.Linear(self.n_feature//2, n_embedding_dim//2)
+            
+            self.positional_encoding = PositionalEncoding(n_embedding_dim, dropout, maxlen=400)      
+            
+            self.encoder = nn.TransformerEncoder(
+                                                nn.TransformerEncoderLayer(d_model=n_embedding_dim, 
+                                                                            nhead=n_enc_head, 
+                                                                            dropout=dropout, 
+                                                                            activation='gelu'), 
+                                                n_enc_layer, 
+                                                nn.LayerNorm(n_embedding_dim))
+                                                
+            self.decoder = nn.TransformerDecoder(
+                                                nn.TransformerDecoderLayer(d_model=n_embedding_dim, 
+                                                                            nhead=n_dec_head, 
+                                                                            dropout=dropout, 
+                                                                            activation='gelu'), 
+                                                n_dec_layer, 
+                                                nn.LayerNorm(n_embedding_dim))  
 
-        self.classifier = nn.Sequential(nn.Linear(n_embedding_dim,n_embedding_dim), nn.ReLU(), nn.Linear(n_embedding_dim,n_class))
-        self.regressor = nn.Sequential(nn.Linear(n_embedding_dim,n_embedding_dim), nn.ReLU(), nn.Linear(n_embedding_dim,2))    
-                           
-        
-        self.decoder_token = nn.Parameter(torch.zeros(len(self.anchors), 1, n_embedding_dim))
+            self.history_unit = HistoryUnit(opt)
 
 
-        self.norm1 = nn.LayerNorm(n_embedding_dim)
-        self.dropout1 = nn.Dropout(0.1)
+            self.history_anchor_decoder_block1 = nn.TransformerDecoder(
+                                                nn.TransformerDecoderLayer(d_model=n_embedding_dim, 
+                                                                            nhead=n_comb_dec_head, 
+                                                                            dropout=dropout, 
+                                                                            activation='gelu'), 
+                                                n_comb_dec_layer, 
+                                                nn.LayerNorm(n_embedding_dim))  
+                
 
-        self.relu = nn.ReLU(True)
-        self.softmaxd1 = nn.Softmax(dim=-1)
+            self.classifier = nn.Sequential(nn.Linear(n_embedding_dim,n_embedding_dim), nn.ReLU(), nn.Linear(n_embedding_dim,n_class))
+            self.regressor = nn.Sequential(nn.Linear(n_embedding_dim,n_embedding_dim), nn.ReLU(), nn.Linear(n_embedding_dim,2))    
+                            
+            
+            self.decoder_token = nn.Parameter(torch.zeros(len(self.anchors), 1, n_embedding_dim))
+
+
+            self.norm1 = nn.LayerNorm(n_embedding_dim)
+            self.dropout1 = nn.Dropout(0.1)
+
+            self.relu = nn.ReLU(True)
+            self.softmaxd1 = nn.Softmax(dim=-1)      
+
 
     def forward(self, inputs):
         # base_x_rgb = self.feature_reduction_rgb(inputs[:,:,:self.n_feature//2])
         # base_x_flow = self.feature_reduction_flow(inputs[:,:,self.n_feature//2:])
-        base_x_rgb = self.feature_reduction_rgb(inputs[:,:,:self.n_feature//2].float())
-        base_x_flow = self.feature_reduction_flow(inputs[:,:,self.n_feature//2:].float())
-        base_x = torch.cat([base_x_rgb,base_x_flow],dim=-1)
+        if self.video_name.startswith("video"):
+            base_x_rgb = self.feature_reduction_rgb(inputs[:,:,:self.n_feature//2])
+            base_x_flow = self.feature_reduction_flow(inputs[:,:,self.n_feature//2:])
+            base_x = torch.cat([base_x_rgb,base_x_flow],dim=-1)
+            
+            base_x = base_x.permute([1,0,2])# seq_len x batch x featsize x 
+            
+            pe_x = self.positional_encoding(base_x)
+            encoded_x = self.encoder(pe_x)    
+            
+            decoder_token = self.decoder_token.expand(-1, encoded_x.shape[1], -1)  
+            decoded_x = self.decoder(decoder_token, encoded_x) 
+            decoded_x = decoded_x.permute([1, 0, 2])
+            
+            anc_cls = self.classifier(decoded_x)
+            anc_reg = self.regressor(decoded_x)
+            
+            return anc_cls, anc_reg
         
-        base_x = base_x.permute([1,0,2])# seq_len x batch x featsize x 
+        else:
+            base_x_rgb = self.feature_reduction_rgb(inputs[:,:,:self.n_feature//2].float())
+            base_x_flow = self.feature_reduction_flow(inputs[:,:,self.n_feature//2:].float())
+            base_x = torch.cat([base_x_rgb,base_x_flow],dim=-1)
+            
+            base_x = base_x.permute([1,0,2])# seq_len x batch x featsize x 
 
-        short_x = base_x[-self.short_window_size:]
+            short_x = base_x[-self.short_window_size:]
 
-        long_x = base_x[:-self.short_window_size]
-        
-        ## Anchor Feature Generator
-        pe_x = self.positional_encoding(short_x)
-        encoded_x = self.encoder(pe_x)   
-        decoder_token = self.decoder_token.expand(-1, encoded_x.shape[1], -1)  
-        decoded_x = self.decoder(decoder_token, encoded_x) 
-        decoded_x = decoded_x
+            long_x = base_x[:-self.short_window_size]
+            
+            ## Anchor Feature Generator
+            pe_x = self.positional_encoding(short_x)
+            encoded_x = self.encoder(pe_x)   
+            decoder_token = self.decoder_token.expand(-1, encoded_x.shape[1], -1)  
+            decoded_x = self.decoder(decoder_token, encoded_x) 
+            decoded_x = decoded_x
 
-        ## Future-Supervised History Module
-        hist_encoded_x, snip_cls = self.history_unit(long_x, encoded_x)
+            ## Future-Supervised History Module
+            hist_encoded_x, snip_cls = self.history_unit(long_x, encoded_x)
 
 
-        ## History Driven Anchor Refinement
-        decoded_anchor_feat = self.history_anchor_decoder_block1(decoded_x, hist_encoded_x)
-        decoded_anchor_feat = decoded_anchor_feat + self.dropout1(decoded_x)
-        decoded_anchor_feat = self.norm1(decoded_anchor_feat)
-        decoded_anchor_feat = decoded_anchor_feat.permute([1, 0, 2])
-        
-        # Predition Module
-        anc_cls = self.classifier(decoded_anchor_feat)
-        anc_reg = self.regressor(decoded_anchor_feat)
-        
-        return anc_cls, anc_reg, snip_cls
+            ## History Driven Anchor Refinement
+            decoded_anchor_feat = self.history_anchor_decoder_block1(decoded_x, hist_encoded_x)
+            decoded_anchor_feat = decoded_anchor_feat + self.dropout1(decoded_x)
+            decoded_anchor_feat = self.norm1(decoded_anchor_feat)
+            decoded_anchor_feat = decoded_anchor_feat.permute([1, 0, 2])
+            
+            # Predition Module
+            anc_cls = self.classifier(decoded_anchor_feat)
+            anc_reg = self.regressor(decoded_anchor_feat)
+            
+            return anc_cls, anc_reg, snip_cls
 
  
 class SuppressNet(torch.nn.Module):

@@ -285,7 +285,7 @@ class VideoDataSet(data.Dataset):
                     if not seg['label'] in self.label_name:
                         self.label_name.append(seg['label'])
         
-        if video_name.startswith("video"):
+        if self.single_video_name.startswith("video"):
             expected_labels = [
                 'BaseballPitch', 'BasketballDunk', 'Billiards', 'CleanandJerk', 'CliffDiving',
                 'CricketBowling', 'CricketShot', 'Diving', 'FrisbeeCatch', 'GolfSwing',

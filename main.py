@@ -190,6 +190,7 @@ class ActionDetectionModel:
     def load_model(self, video_name: str):
         """Loads the MYNET and SuppressNet models based on video name"""
         # Determine which options to use based on video name
+        print(video_name)
         opt = self.thumos_opt if video_name.startswith("video") else self.egtea_opt
         
         # Save options to checkpoint path
@@ -207,10 +208,12 @@ class ActionDetectionModel:
         # Parse anchors
         opt['anchors'] = [int(item) for item in opt['anchors'].split(',')]
 
-        self.model = MYNET(opt).to(device)
+        self.model = MYNET(opt, video_name).to(device)
         if video_name.startswith("video"):
+            print("checkpoint for thumos")
             checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}ckp_best.pth.tar")
         else:
+            print("checkpoint for egtea")
             checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best.pth.tar")
         checkpoint = torch.load(checkpoint_path, map_location=device)
         base_dict = checkpoint['state_dict']
@@ -220,8 +223,10 @@ class ActionDetectionModel:
         if opt["pptype"] == "net":
             self.suppress_model = SuppressNet(opt).to(device)
             if video_name.startswith("video"):
+                print("suppress for thumos")
                 suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "_ckp_best_suppress.pth.tar")
             else:
+                print("suppress for thumos")
                 suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "ckp_best_suppress.pth.tar")
             suppress_checkpoint = torch.load(suppress_checkpoint_path, map_location=device)
             suppress_base_dict = suppress_checkpoint['state_dict']
@@ -613,7 +618,7 @@ class ActionDetectionModel:
                 self.task_status[task_id] = {"status": "failed", "error": str(e)}
             raise e
 
-    def eval_frame(self, dataset, opt):
+    def eval_frame(self, dataset, opt, video_name):
         test_loader = torch.utils.data.DataLoader(dataset,
                                                   batch_size=opt['batch_size'], shuffle=False,
                                                   num_workers=0, pin_memory=True, drop_last=False)
@@ -632,7 +637,10 @@ class ActionDetectionModel:
             input_data = input_data.to(device)
             cls_label = cls_label.to(device)
             reg_label = reg_label.to(device)
-            act_cls, act_reg, _ = self.model(input_data.float())
+            if video_name.startswith("video"):
+                act_cls, act_reg = self.model(input_data.float())
+            else:
+                act_cls, act_reg, _ = self.model(input_data.float())
             cost_reg = 0
             cost_cls = 0
 
@@ -822,7 +830,7 @@ class ActionDetectionModel:
             raise HTTPException(status_code=400, detail="Model failed to load")
 
         dataset = VideoDataSet(opt, subset=opt['inference_subset'], video_name=video_name)
-        cls_loss, reg_loss, tot_loss, output_cls, output_reg, labels_cls, labels_reg, working_time, total_frames = self.eval_frame(dataset, opt)
+        cls_loss, reg_loss, tot_loss, output_cls, output_reg, labels_cls, labels_reg, working_time, total_frames = self.eval_frame(dataset, opt, video_name)
 
         if opt["pptype"] == "nms":
             result_dict = self.eval_map_nms(dataset, output_cls, output_reg, opt)
