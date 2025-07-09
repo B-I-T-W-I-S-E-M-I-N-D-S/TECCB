@@ -206,7 +206,12 @@ class ActionDetectionModel:
             np.random.seed(seed)
         
         # Parse anchors
-        opt['anchors'] = [int(item) for item in opt['anchors'].split(',')]
+        if isinstance(opt['anchors'], str):
+            opt['anchors'] = [int(item) for item in opt['anchors'].split(',')]
+        elif isinstance(opt['anchors'], list):
+            opt['anchors'] = [int(item) for item in opt['anchors']]  # Ensure elements are integers
+        else:
+            raise ValueError(f"Invalid type for anchors: {type(opt['anchors'])}. Expected str or list.")
 
         self.model = MYNET(opt, video_name).to(device)
         if video_name.startswith("video"):
@@ -226,7 +231,7 @@ class ActionDetectionModel:
                 print("suppress for thumos")
                 suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "_ckp_best_suppress.pth.tar")
             else:
-                print("suppress for thumos")
+                print("suppress for egtea")  # Corrected typo in print statement
                 suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "ckp_best_suppress.pth.tar")
             suppress_checkpoint = torch.load(suppress_checkpoint_path, map_location=device)
             suppress_base_dict = suppress_checkpoint['state_dict']
