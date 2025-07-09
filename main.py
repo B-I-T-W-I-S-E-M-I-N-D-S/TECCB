@@ -1,11 +1,11 @@
-
 import os
 import json
 import torch
 import torchvision
 import torch.nn.functional as F
 import numpy as np
-import opts_egtea as opts
+import opts_thumos as opts_thumos  # Import thumos options
+import opts_egtea as opts_egtea    # Import egtea options
 import time
 import h5py
 from tqdm import tqdm
@@ -13,7 +13,7 @@ from iou_utils import *
 from eval import evaluation_detection
 from dataset import VideoDataSet, calc_iou
 from models import MYNET, SuppressNet
-from loss_func import cls_loss_func, cls_loss_func_, regress_loss_func
+from loss_func import cls_loss_func, regress_loss_func
 from loss_func import MultiCrossEntropyLoss
 from functools import *
 import matplotlib.pyplot as plt
@@ -158,7 +158,7 @@ VIDEO_PLAYER_HTML = """
             <source src="{stream_url}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
-        <div classzas="controls">
+        <div class="controls">
             <button onclick="seek(-10)">Rewind 10s</button>
             <button onclick="seek(10)">Forward 10s</button>
         </div>
@@ -175,8 +175,9 @@ VIDEO_PLAYER_HTML = """
 
 # Action Detection Model Class
 class ActionDetectionModel:
-    def __init__(self, opt):
-        self.opt = opt
+    def __init__(self):
+        self.thumos_opt = vars(opts_thumos.parse_opt())
+        self.egtea_opt = vars(opts_egtea.parse_opt())
         self.model = None
         self.suppress_model = None
         self.task_status = {}
@@ -186,22 +187,48 @@ class ActionDetectionModel:
         """Set the base URL for streaming endpoints"""
         self.base_url = base_url
 
-    def load_model(self):
-        """Loads the MYNET and SuppressNet models"""
-        self.model = MYNET(self.opt).to(device)
-        checkpoint_path = os.path.join(self.opt["checkpoint_path"], f"{self.opt['exp']}_ckp_best.pth.tar")
+    def load_model(self, video_name: str):
+        """Loads the MYNET and SuppressNet models based on video name"""
+        # Determine which options to use based on video name
+        opt = self.thumos_opt if video_name.startswith("video") else self.egtea_opt
+        
+        # Save options to checkpoint path
+        os.makedirs(opt["checkpoint_path"], exist_ok=True)
+        opt_file_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_opts.json")
+        with open(opt_file_path, "w") as f:
+            json.dump(opt, f)
+        
+        # Set seed if specified
+        if opt['seed'] >= 0:
+            seed = opt['seed']
+            torch.manual_seed(seed)
+            np.random.seed(seed)
+        
+        # Parse anchors
+        opt['anchors'] = [int(item) for item in opt['anchors'].split(',')]
+
+        self.model = MYNET(opt).to(device)
+        if video_name.startswith("video"):
+            checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}ckp_best.pth.tar")
+        else:
+            checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best.pth.tar")
         checkpoint = torch.load(checkpoint_path, map_location=device)
         base_dict = checkpoint['state_dict']
         self.model.load_state_dict(base_dict)
         self.model.eval()
 
-        if self.opt["pptype"] == "net":
-            self.suppress_model = SuppressNet(self.opt).to(device)
-            suppress_checkpoint_path = os.path.join(self.opt["checkpoint_path"], "ckp_best_suppress.pth.tar")
+        if opt["pptype"] == "net":
+            self.suppress_model = SuppressNet(opt).to(device)
+            if video_name.startswith("video"):
+                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "_ckp_best_suppress.pth.tar")
+            else:
+                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "ckp_best_suppress.pth.tar")
             suppress_checkpoint = torch.load(suppress_checkpoint_path, map_location=device)
             suppress_base_dict = suppress_checkpoint['state_dict']
             self.suppress_model.load_state_dict(suppress_base_dict)
             self.suppress_model.eval()
+        
+        return opt
 
     def annotate_video_with_actions(
         self,
@@ -214,7 +241,8 @@ class ActionDetectionModel:
         gt_text_color: tuple = VIS_CONFIG['video_gt_text_color'],
         pred_text_color: tuple = VIS_CONFIG['video_pred_text_color'],
         text_thickness: int = VIS_CONFIG['video_text_thickness'],
-        task_id: Optional[str] = None
+        task_id: Optional[str] = None,
+        opt: Optional[Dict] = None
     ) -> str:
         os.makedirs(save_dir, exist_ok=True)
         if task_id:
@@ -234,7 +262,7 @@ class ActionDetectionModel:
 
             footer_height = VIS_CONFIG['video_footer_height']
             output_height = frame_height + footer_height
-            output_path = os.path.join(save_dir, f"annotated_{video_id}_{self.opt['exp']}.mp4")
+            output_path = os.path.join(save_dir, f"annotated_{video_id}_{opt['exp']}.mp4")
             fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Use mp4v for MP4 output
             out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, output_height))
 
@@ -477,7 +505,8 @@ class ActionDetectionModel:
         duration: float,
         save_dir: str = VIS_CONFIG['save_dir'],
         frame_interval: float = VIS_CONFIG['frame_interval'],
-        task_id: Optional[str] = None
+        task_id: Optional[str] = None,
+        opt: Optional[Dict] = None
     ) -> str:
         os.makedirs(save_dir, exist_ok=True)
         if task_id:
@@ -568,7 +597,7 @@ class ActionDetectionModel:
                 ax_pred.text(start, 0.8, f"{start:.1f}", ha='center', fontsize=8, color='black')
                 ax_pred.text(end, 0.8, f"{end:.1f}", ha='center', fontsize=8, color='black')
 
-            jpg_path = os.path.join(save_dir, f"viz_{video_id}_{self.opt['exp']}.png")
+            jpg_path = os.path.join(save_dir, f"viz_{video_id}_{opt['exp']}.png")
             plt.savefig(jpg_path, dpi=100, bbox_inches='tight')
             plt.close()
             print(f"[✅ Saved Visualization]: {jpg_path}")
@@ -584,9 +613,9 @@ class ActionDetectionModel:
                 self.task_status[task_id] = {"status": "failed", "error": str(e)}
             raise e
 
-    def eval_frame(self, dataset):
+    def eval_frame(self, dataset, opt):
         test_loader = torch.utils.data.DataLoader(dataset,
-                                                  batch_size=self.opt['batch_size'], shuffle=False,
+                                                  batch_size=opt['batch_size'], shuffle=False,
                                                   num_workers=0, pin_memory=True, drop_last=False)
         labels_cls = {video_name: [] for video_name in dataset.video_list}
         labels_reg = {video_name: [] for video_name in dataset.video_list}
@@ -615,7 +644,7 @@ class ActionDetectionModel:
             cost_reg = loss
             epoch_cost_reg += cost_reg.detach().cpu().numpy()
 
-            cost = self.opt['alpha'] * cost_cls + self.opt['beta'] * cost_reg
+            cost = opt['alpha'] * cost_cls + opt['beta'] * cost_reg
             epoch_cost += cost.detach().cpu().numpy()
 
             act_cls = torch.softmax(act_cls, dim=-1)
@@ -623,7 +652,7 @@ class ActionDetectionModel:
             total_frames += input_data.size(0)
 
             for b in range(0, input_data.size(0)):
-                video_name, st, ed, data_idx = dataset.inputs[n_iter * self.opt['batch_size'] + b]
+                video_name, st, ed, data_idx = dataset.inputs[n_iter * opt['batch_size'] + b]
                 output_cls[video_name] += [act_cls[b, :].detach().cpu().numpy()]
                 output_reg[video_name] += [act_reg[b, :].detach().cpu().numpy()]
                 labels_cls[video_name] += [cls_label[b, :].cpu().numpy()]
@@ -644,13 +673,13 @@ class ActionDetectionModel:
 
         return cls_loss, reg_loss, tot_loss, output_cls, output_reg, labels_cls, labels_reg, working_time, total_frames
 
-    def eval_map_nms(self, dataset, output_cls, output_reg):
+    def eval_map_nms(self, dataset, output_cls, output_reg, opt):
         result_dict = {}
         proposal_dict = []
-        num_class = self.opt["num_of_class"]
-        unit_size = self.opt['segment_size']
-        threshold = self.opt['threshold']
-        anchors = self.opt['anchors']
+        num_class = opt["num_of_class"]
+        unit_size = opt['segment_size']
+        threshold = opt['threshold']
+        anchors = opt['anchors']
 
         for video_name in dataset.video_list:
             duration = dataset.video_len[video_name]
@@ -663,7 +692,7 @@ class ActionDetectionModel:
 
                 proposal_anc_dict = []
                 for anc_idx in range(0, len(anchors)):
-                    cls = np.argwhere(cls_anc[anc_idx][:-1] > self.opt['threshold']).reshape(-1)
+                    cls = np.argwhere(cls_anc[anc_idx][:-1] > opt['threshold']).reshape(-1)
                     if len(cls) == 0:
                         continue
                     ed = idx + anchors[anc_idx] * reg_anc[anc_idx][0]
@@ -680,19 +709,19 @@ class ActionDetectionModel:
 
                 proposal_dict += proposal_anc_dict
 
-            proposal_dict = non_max_suppression(proposal_dict, overlapThresh=self.opt['soft_nms'])
+            proposal_dict = non_max_suppression(proposal_dict, overlapThresh=opt['soft_nms'])
             result_dict[video_name] = proposal_dict
             proposal_dict = []
 
         return result_dict
 
-    def eval_map_supnet(self, dataset, output_cls, output_reg):
+    def eval_map_supnet(self, dataset, output_cls, output_reg, opt):
         result_dict = {}
         proposal_dict = []
-        num_class = self.opt["num_of_class"]
-        unit_size = self.opt['segment_size']
-        threshold = self.opt['threshold']
-        anchors = self.opt['anchors']
+        num_class = opt["num_of_class"]
+        unit_size = opt['segment_size']
+        threshold = opt['threshold']
+        anchors = opt['anchors']
 
         for video_name in dataset.video_list:
             duration = dataset.video_len[video_name]
@@ -705,7 +734,7 @@ class ActionDetectionModel:
                 reg_anc = output_reg[video_name][idx]
                 proposal_anc_dict = []
                 for anc_idx in range(0, len(anchors)):
-                    cls = np.argwhere(cls_anc[anc_idx][:-1] > self.opt['threshold']).reshape(-1)
+                    cls = np.argwhere(cls_anc[anc_idx][:-1] > opt['threshold']).reshape(-1)
                     if len(cls) == 0:
                         continue
                     ed = idx + anchors[anc_idx] * reg_anc[anc_idx][0]
@@ -720,7 +749,7 @@ class ActionDetectionModel:
                         tmp_dict["gentime"] = float(idx * frame_to_time / 100.0)
                         proposal_anc_dict.append(tmp_dict)
 
-                proposal_anc_dict = non_max_suppression(proposal_anc_dict, overlapThresh=self.opt['soft_nms'])
+                proposal_anc_dict = non_max_suppression(proposal_anc_dict, overlapThresh=opt['soft_nms'])
                 conf_queue[:-1, :] = conf_queue[1:, :].clone()
                 conf_queue[-1, :] = 0
                 for proposal in proposal_anc_dict:
@@ -730,10 +759,10 @@ class ActionDetectionModel:
                 suppress_conf = self.suppress_model(minput)
                 suppress_conf = suppress_conf.squeeze(0).detach().cpu().numpy()
                 for cls in range(0, num_class - 1):
-                    if suppress_conf[cls] > self.opt['sup_threshold']:
+                    if suppress_conf[cls] > opt['sup_threshold']:
                         for proposal in proposal_anc_dict:
                             if proposal['label'] == dataset.label_name[cls]:
-                                if check_overlap_proposal(proposal_dict, proposal, overlapThresh=self.opt['soft_nms']) is None:
+                                if check_overlap_proposal(proposal_dict, proposal, overlapThresh=opt['soft_nms']) is None:
                                     proposal_dict.append(proposal)
 
             result_dict[video_name] = proposal_dict
@@ -741,7 +770,7 @@ class ActionDetectionModel:
 
         return result_dict
 
-    async def generate_visualizations(self, video_name: str, pred_segments: List[Dict], gt_segments: List[Dict], video_path: str, duration: float, task_id: str):
+    async def generate_visualizations(self, video_name: str, pred_segments: List[Dict], gt_segments: List[Dict], video_path: str, duration: float, task_id: str, opt: Dict):
         """Generate visualizations and annotated video in the background"""
         try:
             visualization_path = self.visualize_action_lengths(
@@ -750,14 +779,16 @@ class ActionDetectionModel:
                 gt_segments=gt_segments,
                 video_path=video_path,
                 duration=duration,
-                task_id=f"viz_{task_id}"
+                task_id=f"viz_{task_id}",
+                opt=opt
             )
             video_output_path = self.annotate_video_with_actions(
                 video_id=video_name,
                 pred_segments=pred_segments,
                 gt_segments=gt_segments,
                 video_path=video_path,
-                task_id=f"video_{task_id}"
+                task_id=f"video_{task_id}",
+                opt=opt
             )
             self.task_status[task_id] = {
                 "visualization_path": visualization_path,
@@ -777,8 +808,6 @@ class ActionDetectionModel:
             }
 
     async def predict(self, input_data: VideoInput, background_tasks: BackgroundTasks) -> VideoPrediction:
-        if not self.model:
-            raise HTTPException(status_code=400, detail="Model is not loaded")
         input_data = input_data.dict()
         video_path = input_data['video_path']
         video_name = input_data['video_name'] or os.path.splitext(os.path.basename(video_path))[0]
@@ -786,20 +815,26 @@ class ActionDetectionModel:
         if not os.path.exists(video_path):
             raise HTTPException(status_code=400, detail=f"Video path {video_path} does not exist")
 
-        dataset = VideoDataSet(self.opt, subset=self.opt['inference_subset'], video_name=video_name)
-        cls_loss, reg_loss, tot_loss, output_cls, output_reg, labels_cls, labels_reg, working_time, total_frames = self.eval_frame(dataset)
+        # Load the appropriate model and options based on video name
+        opt = self.load_model(video_name)
+        
+        if not self.model:
+            raise HTTPException(status_code=400, detail="Model failed to load")
 
-        if self.opt["pptype"] == "nms":
-            result_dict = self.eval_map_nms(dataset, output_cls, output_reg)
-        elif self.opt["pptype"] == "net":
-            result_dict = self.eval_map_supnet(dataset, output_cls, output_reg)
+        dataset = VideoDataSet(opt, subset=opt['inference_subset'], video_name=video_name)
+        cls_loss, reg_loss, tot_loss, output_cls, output_reg, labels_cls, labels_reg, working_time, total_frames = self.eval_frame(dataset, opt)
+
+        if opt["pptype"] == "nms":
+            result_dict = self.eval_map_nms(dataset, output_cls, output_reg, opt)
+        elif opt["pptype"] == "net":
+            result_dict = self.eval_map_supnet(dataset, output_cls, output_reg, opt)
         else:
-            raise HTTPException(status_code=400, detail=f"Invalid pptype: {self.opt['pptype']}")
+            raise HTTPException(status_code=400, detail=f"Invalid pptype: {opt['pptype']}")
 
-        mAP_result = evaluation_detection(self.opt)
+        mAP_result = evaluation_detection(opt)
         mAP = float(np.mean(mAP_result)) if isinstance(mAP_result, (list, np.ndarray)) else float(mAP_result)
 
-        video_anno_file = self.opt["video_anno"].format(self.opt["split"])
+        video_anno_file = opt["video_anno"].format(opt["split"])
         with open(video_anno_file, 'r') as f:
             anno_data = json.load(f)
         gt_annotations = anno_data['database'][video_name]['annotations']
@@ -870,7 +905,8 @@ class ActionDetectionModel:
                 gt_segments=gt_segments,
                 video_path=video_path,
                 duration=duration,
-                task_id=task_id
+                task_id=task_id,
+                opt=opt
             )
             self.task_status[task_id] = {
                 "visualization_path": None,
@@ -967,20 +1003,8 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-# Load options and initialize model
-opt = vars(opts.parse_opt())
-os.makedirs(opt["checkpoint_path"], exist_ok=True)
-opt_file_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_opts.json")
-with open(opt_file_path, "w") as f:
-    json.dump(opt, f)
-
-if opt['seed'] >= 0:
-    seed = opt['seed']
-    torch.manual_seed(seed)
-    np.random.seed(seed)
-
-opt['anchors'] = [int(item) for item in opt['anchors'].split(',')]
-action_model = ActionDetectionModel(opt)
+# Initialize model without loading (load dynamically in predict)
+action_model = ActionDetectionModel()
 
 @app.get('/')
 def index():
@@ -1059,7 +1083,8 @@ async def watch_video(video_name: str):
     Example:
         GET /watch/example_video
     """
-    file_name = f"annotated_{video_name}_{action_model.opt['exp']}.mp4"
+    opt = action_model.thumos_opt if video_name.startswith("video") else action_model.egtea_opt
+    file_name = f"annotated_{video_name}_{opt['exp']}.mp4"
     file_path = os.path.join("output", "videos", file_name)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail=f"Video {file_name} not found")
@@ -1082,9 +1107,8 @@ async def download_file(file_type: str, file_name: str):
 
 @app.on_event("startup")
 async def startup():
-    action_model.load_model()
-    print("Action detection model loaded successfully")
-    # Set the base URL for streaming
+    # Load both options but defer model loading to predict
+    print("Action detection options loaded successfully")
     port = 8004
     ngrok_tunnel = ngrok.connect(port)
     action_model.set_base_url(ngrok_tunnel.public_url)

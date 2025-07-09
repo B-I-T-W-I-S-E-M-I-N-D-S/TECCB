@@ -285,13 +285,21 @@ class VideoDataSet(data.Dataset):
                     if not seg['label'] in self.label_name:
                         self.label_name.append(seg['label'])
         
-        # Ensure all 22 EGTEA action classes are included
-        expected_labels = [
-            'Clean/Wipe', 'Close', 'Compress', 'Crack', 'Cut', 'Divide/Pull Apart',
-            'Dry', 'Inspect/Read', 'Mix', 'Move Around', 'Open', 'Operate', 'Other',
-            'Pour', 'Put', 'Squeeze', 'Take', 'Transfer', 'Turn off', 'Turn on', 'Wash',
-            'Spread'  # Assumed missing label; replace with actual label if known
-        ]
+        if video_name.startswith("video"):
+            expected_labels = [
+                'BaseballPitch', 'BasketballDunk', 'Billiards', 'CleanandJerk', 'CliffDiving',
+                'CricketBowling', 'CricketShot', 'Diving', 'FrisbeeCatch', 'GolfSwing',
+                'HammerThrow', 'HighJump', 'JavelinThrow', 'LongJump', 'PoleVault',
+                'Shotput', 'SoccerPenalty', 'TennisSwing', 'ThrowDiscus', 'VolleyballSpiking'
+            ]
+        else:
+            # Ensure all 22 EGTEA action classes are included
+            expected_labels = [
+                'Clean/Wipe', 'Close', 'Compress', 'Crack', 'Cut', 'Divide/Pull Apart',
+                'Dry', 'Inspect/Read', 'Mix', 'Move Around', 'Open', 'Operate', 'Other',
+                'Pour', 'Put', 'Squeeze', 'Take', 'Transfer', 'Turn off', 'Turn on', 'Wash',
+                'Spread'  # Assumed missing label; replace with actual label if known
+            ]
         for label in expected_labels:
             if label not in self.label_name:
                 self.label_name.append(label)
