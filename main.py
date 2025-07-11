@@ -278,9 +278,9 @@ class ActionDetectionModel:
             is_thumos = video_id.startswith("video")
             footer_height = 100 if is_thumos else VIS_CONFIG['video_footer_height']  # Smaller footer for Thumos
             output_height = frame_height + footer_height
-            text_scale = 0.5 * 1.2 if is_thumos else VIS_CONFIG['video_text_scale'] * 1.2  # Same base size, adjusted for quality
+            text_scale = 0.5 * 0.9 if is_thumos else VIS_CONFIG['video_text_scale'] * 1.2  # Same base size, adjusted for quality
             bar_height = int(0.1 * footer_height) if is_thumos else int(VIS_CONFIG['video_bar_height'] * footer_height)  # Smaller bars for Thumos
-            bar_text_scale = 0.7 if is_thumos else VIS_CONFIG['video_bar_text_scale']  # Same base size for Thumos
+            bar_text_scale = 0.4 if is_thumos else VIS_CONFIG['video_bar_text_scale']  # Same base size for Thumos
             text_thickness = 2 if is_thumos else VIS_CONFIG['video_text_thickness']  # Increased thickness for better quality
 
             output_path = os.path.join(save_dir, f"annotated_{video_id}_{opt['exp']}.mp4")
