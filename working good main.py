@@ -68,10 +68,6 @@ VIS_CONFIG = {
     'scroll_speed': 0.2,
 }
 
-# Convert #C0C0C0 to BGR for OpenCV
-BAR_BG_COLOR = (192, 192, 192)  # BGR equivalent of #C0C0C0
-BAR_BG_PADDING = 5  # Slight padding to make background larger
-
 # Determine device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
@@ -169,9 +165,9 @@ VIDEO_PLAYER_HTML = """
     </div>
     <script>
         const video = document.querySelector('video');
-        function seek(seconds) {
+        function seek(seconds) {{
             video.currentTime += seconds;
-        }
+        }}
     </script>
 </body>
 </html>
@@ -274,15 +270,8 @@ class ActionDetectionModel:
             total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             duration = total_frames / fps
 
-            # Adjust design based on video type
-            is_thumos = video_id.startswith("video")
-            footer_height = 100 if is_thumos else VIS_CONFIG['video_footer_height']  # Smaller footer for Thumos
+            footer_height = VIS_CONFIG['video_footer_height']
             output_height = frame_height + footer_height
-            text_scale = 0.5 * 1.2 if is_thumos else VIS_CONFIG['video_text_scale'] * 1.2  # Same base size, adjusted for quality
-            bar_height = int(0.1 * footer_height) if is_thumos else int(VIS_CONFIG['video_bar_height'] * footer_height)  # Smaller bars for Thumos
-            bar_text_scale = 0.7 if is_thumos else VIS_CONFIG['video_bar_text_scale']  # Same base size for Thumos
-            text_thickness = 2 if is_thumos else VIS_CONFIG['video_text_thickness']  # Increased thickness for better quality
-
             output_path = os.path.join(save_dir, f"annotated_{video_id}_{opt['exp']}.mp4")
             fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Use mp4v for MP4 output
             out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, output_height))
@@ -313,25 +302,25 @@ class ActionDetectionModel:
             font_path = VIS_CONFIG['video_font_path']
             font_fallback = VIS_CONFIG['video_font_fallback']
             font_size = int(20 * text_scale)
-            bar_font_size = int(20 * bar_text_scale)
+            bar_font_size = int(20 * VIS_CONFIG['video_bar_text_scale'])
             font = None
             bar_font = None
             if font_path:
                 try:
-                    font = ImageFont.truetype(font_path, font_size, layout_engine=ImageFont.Layout.BASIC)
-                    bar_font = ImageFont.truetype(font_path, bar_font_size, layout_engine=ImageFont.Layout.BASIC)
+                    font = ImageFont.truetype(font_path, font_size)
+                    bar_font = ImageFont.truetype(font_path, bar_font_size)
                 except IOError:
                     try:
-                        font = ImageFont.truetype(font_fallback, font_size, layout_engine=ImageFont.Layout.BASIC)
-                        bar_font = ImageFont.truetype(font_fallback, bar_font_size, layout_engine=ImageFont.Layout.BASIC)
+                        font = ImageFont.truetype(font_fallback, font_size)
+                        bar_font = ImageFont.truetype(font_fallback, bar_font_size)
                     except IOError:
                         font = None
                         bar_font = None
 
-            window_size = VIS_CONFIG['scroll_window_duration']
+            window_size = 20.0
             num_windows = int(np.ceil(duration / window_size))
-            text_bar_gap = 24 if is_thumos else 48  # Smaller gap for Thumos
-            text_x = VIS_CONFIG['video_bar_label_x']
+            text_bar_gap = 48
+            text_x = 10
 
             frame_idx = 0
             written_frames = 0
@@ -351,48 +340,30 @@ class ActionDetectionModel:
                 window_duration = window_end - window_start
                 window_timestamp = timestamp - window_start
 
-                # Ground truth and prediction labels (moved to left side)
                 gt_labels = [seg['label'] for seg in gt_segments if seg['start'] <= timestamp <= seg['end']]
-                gt_text = "Ground Truth:\n" + ", ".join(gt_labels) if gt_labels else "Ground Truth:\n"
+                gt_text = "GT: " + ", ".join(gt_labels) if gt_labels else ""
                 pred_labels = [seg['label'] for seg in pred_segments if seg['start'] <= timestamp <= seg['end']]
-                pred_text = "Prediction:\n" + ", ".join(pred_labels) if pred_labels else "Prediction:\n"
+                pred_text = "Pred: " + ", ".join(pred_labels) if pred_labels else ""
 
                 footer_y = frame_height
-                gt_bar_y = footer_y + int(VIS_CONFIG['video_gt_bar_y'] * footer_height)
-                pred_bar_y = footer_y + int(VIS_CONFIG['video_pred_bar_y'] * footer_height)
+                gt_bar_y = footer_y + int(0.2 * footer_height)
+                pred_bar_y = footer_y + int(0.5 * footer_height)
+                bar_height = int(VIS_CONFIG['video_bar_height'] * footer_height)
 
                 if font:
-                    gt_text_bbox = bar_font.getbbox("Ground Truth")
-                    pred_text_bbox = bar_font.getbbox("Prediction")
+                    gt_text_bbox = bar_font.getbbox("GT")
+                    pred_text_bbox = bar_font.getbbox("Pred")
                     gt_text_width = gt_text_bbox[2] - gt_text_bbox[0]
                     pred_text_width = pred_text_bbox[2] - pred_text_bbox[0]
                 else:
-                    gt_text_size, _ = cv2.getTextSize("Ground Truth", cv2.FONT_HERSHEY_DUPLEX, bar_text_scale, 1)
-                    pred_text_size, _ = cv2.getTextSize("Prediction", cv2.FONT_HERSHEY_DUPLEX, bar_text_scale, 1)
+                    gt_text_size, _ = cv2.getTextSize("GT", cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
+                    pred_text_size, _ = cv2.getTextSize("Pred", cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
                     gt_text_width = gt_text_size[0]
                     pred_text_width = pred_text_size[0]
                 max_text_width = max(gt_text_width, pred_text_width)
                 bar_start_x = text_x + max_text_width + text_bar_gap
                 bar_width = frame_width - bar_start_x
 
-                # Draw background color (#C0C0C0) with slight padding around bars
-                bg_height = bar_height + 2 * BAR_BG_PADDING
-                cv2.rectangle(
-                    extended_frame,
-                    (bar_start_x - BAR_BG_PADDING, gt_bar_y - BAR_BG_PADDING),
-                    (bar_start_x + bar_width + BAR_BG_PADDING, gt_bar_y + bg_height),
-                    BAR_BG_COLOR,
-                    -1
-                )
-                cv2.rectangle(
-                    extended_frame,
-                    (bar_start_x - BAR_BG_PADDING, pred_bar_y - BAR_BG_PADDING),
-                    (bar_start_x + bar_width + BAR_BG_PADDING, pred_bar_y + bg_height),
-                    BAR_BG_COLOR,
-                    -1
-                )
-
-                # Draw ground truth and prediction bars
                 for seg in gt_segments:
                     if seg['start'] <= window_end and seg['end'] >= window_start:
                         start_t = max(seg['start'], window_start)
@@ -423,78 +394,96 @@ class ActionDetectionModel:
                                 -1
                             )
 
-                # Add text labels for bars
                 if font:
                     frame_rgb = cv2.cvtColor(extended_frame, cv2.COLOR_BGR2RGB)
                     pil_image = Image.fromarray(frame_rgb)
                     draw = ImageDraw.Draw(pil_image)
-                    # Enhanced text rendering for Thumos with anti-aliasing and better contrast
-                    draw.text((text_x, gt_bar_y + bar_height // 2), "ground-truth", font=bar_font, fill=gt_color_rgb, stroke_width=1 if is_thumos else 0, stroke_fill=(0, 0, 0))
-                    draw.text((text_x, pred_bar_y + bar_height // 2), "prediction", font=bar_font, fill=pred_color_rgb, stroke_width=1 if is_thumos else 0, stroke_fill=(0, 0, 0))
-                    # Centered frame and FPS text at top
-                    frame_info = f"frame: {frame_idx} fps: {fps:.2f}"
-                    frame_info_bbox = draw.textbbox((0, 0), frame_info, font=font)
-                    frame_info_width = frame_info_bbox[2] - frame_info_bbox[0]
-                    center_x = (frame_width - frame_info_width) // 2
-                    draw.text((center_x, 10), frame_info, font=font, fill=(0, 0, 0))
-                    # Left-side text for ground truth and prediction
-                    draw.text((10, int(frame_height * 0.3)), gt_text, font=font, fill=gt_color_rgb, stroke_width=1 if is_thumos else 0, stroke_fill=(0, 0, 0))
-                    draw.text((10, int(frame_height * 0.6)), pred_text, font=font, fill=pred_color_rgb, stroke_width=1 if is_thumos else 0, stroke_fill=(0, 0, 0))
+                    frame_info = f"Frame: {frame_idx} | FPS: {fps:.2f}"
+                    frame_text_bbox = draw.textbbox((0, 0), frame_info, font=font)
+                    frame_text_width = frame_text_bbox[2] - frame_text_bbox[0]
+                    frame_text_x = (frame_width - frame_text_width) // 2
+                    draw.text((frame_text_x, 10), frame_info, font=font, fill=(0, 0, 0))
+                    window_info = f"{window_start:.1f}s - {window_end:.1f}s"
+                    window_text_bbox = draw.textbbox((0, 0), window_info, font=bar_font)
+                    window_text_width = window_text_bbox[2] - window_text_bbox[0]
+                    window_text_x = (frame_width - window_text_width) // 2
+                    draw.text((window_text_x, footer_y + 10), window_info, font=bar_font, fill=(0, 0, 0))
+                    if gt_text:
+                        gt_y = int(frame_height * VIS_CONFIG['video_gt_text_y'])
+                        draw.text((10, gt_y), gt_text, font=font, fill=gt_color_rgb)
+                    if pred_text:
+                        pred_y = int(frame_height * VIS_CONFIG['video_pred_text_y'])
+                        draw.text((10, pred_y), pred_text, font=font, fill=pred_color_rgb)
+                    draw.text((text_x, gt_bar_y + bar_height // 2), "GT", font=bar_font, fill=gt_color_rgb)
+                    draw.text((text_x, pred_bar_y + bar_height // 2), "Pred", font=bar_font, fill=pred_color_rgb)
                     extended_frame = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
                 else:
-                    cv2.putText(
-                        extended_frame,
-                        "ground-truth",
-                        (text_x, gt_bar_y + bar_height // 2 + 5),
-                        cv2.FONT_HERSHEY_DUPLEX,
-                        bar_text_scale,
-                        gt_text_color,
-                        text_thickness,
-                        cv2.LINE_AA
-                    )
-                    cv2.putText(
-                        extended_frame,
-                        "prediction",
-                        (text_x, pred_bar_y + bar_height // 2 + 5),
-                        cv2.FONT_HERSHEY_DUPLEX,
-                        bar_text_scale,
-                        pred_text_color,
-                        text_thickness,
-                        cv2.LINE_AA
-                    )
-                    # Centered frame and FPS text at top
-                    frame_info = f"frame: {frame_idx} fps: {fps:.2f}"
-                    (text_width, text_height), _ = cv2.getTextSize(frame_info, cv2.FONT_HERSHEY_DUPLEX, text_scale, text_thickness)
-                    center_x = (frame_width - text_width) // 2
+                    frame_info = f"Frame: {frame_idx} | FPS: {fps:.2f}"
+                    text_size, _ = cv2.getTextSize(frame_info, cv2.FONT_HERSHEY_DUPLEX, text_scale, text_thickness)
+                    frame_text_x = (frame_width - text_size[0]) // 2
                     cv2.putText(
                         extended_frame,
                         frame_info,
-                        (center_x, 30),
+                        (frame_text_x, 30),
                         cv2.FONT_HERSHEY_DUPLEX,
                         text_scale,
                         (0, 0, 0),
                         text_thickness,
                         cv2.LINE_AA
                     )
-                    # Left-side text for ground truth and prediction
+                    window_info = f"{window_start:.1f}s - {window_end:.1f}s"
+                    window_text_size, _ = cv2.getTextSize(window_info, cv2.FONT_HERSHEY_DUPLEX, VIS_CONFIG['video_bar_text_scale'], 1)
+                    window_text_x = (frame_width - window_text_size[0]) // 2
                     cv2.putText(
                         extended_frame,
-                        gt_text,
-                        (10, int(frame_height * 0.3) + 20),
+                        window_info,
+                        (window_text_x, footer_y + 20),
                         cv2.FONT_HERSHEY_DUPLEX,
-                        text_scale,
+                        VIS_CONFIG['video_bar_text_scale'],
+                        (0, 0, 0),
+                        1,
+                        cv2.LINE_AA
+                    )
+                    if gt_text:
+                        cv2.putText(
+                            extended_frame,
+                            gt_text,
+                            (10, int(frame_height * VIS_CONFIG['video_gt_text_y'])),
+                            cv2.FONT_HERSHEY_DUPLEX,
+                            text_scale,
+                            gt_text_color,
+                            text_thickness,
+                            cv2.LINE_AA
+                        )
+                    if pred_text:
+                        cv2.putText(
+                            extended_frame,
+                            pred_text,
+                            (10, int(frame_height * VIS_CONFIG['video_pred_text_y'])),
+                            cv2.FONT_HERSHEY_DUPLEX,
+                            text_scale,
+                            pred_text_color,
+                            text_thickness,
+                            cv2.LINE_AA
+                        )
+                    cv2.putText(
+                        extended_frame,
+                        "GT",
+                        (text_x, gt_bar_y + bar_height // 2 + 5),
+                        cv2.FONT_HERSHEY_DUPLEX,
+                        VIS_CONFIG['video_bar_text_scale'],
                         gt_text_color,
-                        text_thickness,
+                        1,
                         cv2.LINE_AA
                     )
                     cv2.putText(
                         extended_frame,
-                        pred_text,
-                        (10, int(frame_height * 0.6) + 20),
+                        "Pred",
+                        (text_x, pred_bar_y + bar_height // 2 + 5),
                         cv2.FONT_HERSHEY_DUPLEX,
-                        text_scale,
+                        VIS_CONFIG['video_bar_text_scale'],
                         pred_text_color,
-                        text_thickness,
+                        1,
                         cv2.LINE_AA
                     )
 
