@@ -1,0 +1,5212 @@
+{
+    "database": {
+        "A1_part1": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        3.0,
+                        10.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        19.0,
+                        21.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        30.0,
+                        35.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        40.0,
+                        45.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        49.0,
+                        63.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        65.0,
+                        69.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        71.0,
+                        75.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        83.0,
+                        94.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        104.0,
+                        107.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        108.0,
+                        121.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        125.0,
+                        137.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        142.0,
+                        144.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        146.0,
+                        152.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        153.0,
+                        159.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        161.0,
+                        166.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        168.0,
+                        175.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        178.0,
+                        183.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        196.0,
+                        201.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        203.0,
+                        206.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        211.0,
+                        215.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        216.0,
+                        233.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        239.0,
+                        246.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        247.0,
+                        255.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        257.0,
+                        267.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        268.0,
+                        282.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        284.0,
+                        289.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        291.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A1_part2": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        13.0,
+                        21.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        37.0,
+                        50.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        64.0,
+                        66.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        69.0,
+                        72.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        73.0,
+                        104.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        114.0,
+                        119.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        125.0,
+                        127.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        129.0,
+                        133.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        134.0,
+                        136.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        141.0,
+                        144.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        156.0,
+                        160.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        169.0,
+                        171.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        175.0,
+                        178.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        183.0,
+                        186.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        189.0,
+                        192.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        200.0,
+                        203.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        209.0,
+                        213.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        220.0,
+                        221.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        226.0,
+                        231.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        233.0,
+                        236.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        244.0,
+                        249.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        263.0,
+                        265.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        278.0,
+                        280.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        283.0,
+                        285.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        295.0,
+                        297.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A1_part3": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        4.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        14.0,
+                        16.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        19.0,
+                        23.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        32.0,
+                        35.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        42.0,
+                        63.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        66.0,
+                        69.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        71.0,
+                        74.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        77.0,
+                        88.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        93.0,
+                        95.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        100.0,
+                        109.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        114.0,
+                        131.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        132.0,
+                        136.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        137.0,
+                        147.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        149.0,
+                        152.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        159.0,
+                        164.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        167.0,
+                        172.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        173.0,
+                        180.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        187.0,
+                        201.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        211.0,
+                        216.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        217.0,
+                        212.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        224.0,
+                        229.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        234.0,
+                        238.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        239.0,
+                        242.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        251.0,
+                        258.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        260.0,
+                        263.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        264.0,
+                        273.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        280.0,
+                        282.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        284.0,
+                        292.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        294.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A1_part4": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        4.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        18.0,
+                        22.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        26.0,
+                        29.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        37.0,
+                        43.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        46.0,
+                        54.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        67.0,
+                        80.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        88.0,
+                        91.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        93.0,
+                        96.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        107.0,
+                        109.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        112.0,
+                        113.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        124.0,
+                        127.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        132.0,
+                        135.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        141.0,
+                        149.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        141.0,
+                        155.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        172.0,
+                        179.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        180.0,
+                        211.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        212.0,
+                        236.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        241.0,
+                        249.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        253.0,
+                        256.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        276.0,
+                        280.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        282.0,
+                        290.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        293.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A1_part5": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        12.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        14.0,
+                        32.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        33.0,
+                        35.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        40.0,
+                        41.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        44.0,
+                        60.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        62.0,
+                        103.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        105.0,
+                        109.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        114.0,
+                        135.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        136.0,
+                        131.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        145.0,
+                        167.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        173.0,
+                        184.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        186.0,
+                        198.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        200.0,
+                        204.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        207.0,
+                        209.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        210.0,
+                        219.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        224.0,
+                        227.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        244.0,
+                        247.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        254.0,
+                        256.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        263.0,
+                        265.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        274.0,
+                        276.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        279.0,
+                        287.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        294.0,
+                        296.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A1_part6": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        4.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        6.0,
+                        8.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        9.0,
+                        21.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        23.0,
+                        24.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        26.0,
+                        30.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        39.0,
+                        44.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        78.0,
+                        83.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        85.0,
+                        99.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        105.0,
+                        111.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        122.0,
+                        124.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        129.0,
+                        131.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        140.0,
+                        145.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        151.0,
+                        152.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        156.0,
+                        158.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        164.0,
+                        168.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        174.0,
+                        176.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        179.0,
+                        180.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        187.0,
+                        194.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        197.0,
+                        201.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        208.0,
+                        210.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        218.0,
+                        220.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        226.0,
+                        229.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        230.0,
+                        248.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        249.0,
+                        257.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        268.0,
+                        272.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        296.0,
+                        299.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A1_part7": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        5.0,
+                        7.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        8.0,
+                        9.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        13.0,
+                        23.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        31.0,
+                        35.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        40.0,
+                        42.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        50.0,
+                        53.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        54.0,
+                        56.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        71.0,
+                        73.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        74.0,
+                        78.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        85.0,
+                        90.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        95.0,
+                        98.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        130.0,
+                        131.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        141.0,
+                        145.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        147.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A1_part8": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A1_part9": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A1_part10": {
+            "subset": "train",
+            "split": 1,
+            "duration": 146.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.0,
+                        146.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A2_part1": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        0.12
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        0.14,
+                        0.25
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        0.26,
+                        86.0
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        87.0,
+                        98.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        99.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A2_part2": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        130.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        131.0,
+                        135.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        140.0,
+                        195.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        197.0,
+                        202.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        203.0,
+                        262.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        263.0,
+                        265.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        266.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A2_part3": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        224.0
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        281.0,
+                        288.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        292.0,
+                        298.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A2_part4": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        0.07
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        141.0,
+                        143.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        180.0,
+                        183.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        267.0,
+                        272.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        280.0,
+                        289.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A2_part5": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        195.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A3_part1": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A3_part2": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A3_part3": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A3_part4": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A3_part5": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A3_part6": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A3_part7": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        0.21
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        0.22,
+                        0.25
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        0.3,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A3_part8": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A5_part1": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        9.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        14.0,
+                        20.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        23.0,
+                        28.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        44.0,
+                        46.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        47.0,
+                        51.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        59.0,
+                        62.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        64.0,
+                        71.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        72.0,
+                        99.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        156.0,
+                        172.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        175.0,
+                        180.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        199.0,
+                        201.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        202.0,
+                        211.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        213.0,
+                        225.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        238.0,
+                        241.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        257.0,
+                        269.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A5_part2": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        44.0,
+                        46.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        111.0,
+                        113.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        145.0,
+                        147.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        154.0,
+                        158.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        180.0,
+                        185.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        193.0,
+                        197.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        216.0,
+                        219.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        220.0,
+                        224.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        270.0,
+                        273.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A5_part3": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        65.0,
+                        67.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        79.0,
+                        82.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        98.0,
+                        100.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        114.0,
+                        118.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        119.0,
+                        136.0
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        137.0,
+                        143.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        152.0,
+                        156.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        160.0,
+                        164.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        194.0,
+                        195.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        287.0,
+                        296.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        297.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A5_part4": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        4.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        9.0,
+                        12.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        17.0,
+                        19.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        20.0,
+                        29.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        34.0,
+                        37.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        39.0,
+                        51.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        56.0,
+                        63.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        69.0,
+                        74.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        79.0,
+                        81.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        93.0,
+                        95.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        96.0,
+                        113.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        117.0,
+                        123.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        126.0,
+                        128.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        132.0,
+                        135.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        136.0,
+                        141.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        142.0,
+                        149.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        157.0,
+                        161.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        174.0,
+                        178.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        182.0,
+                        183.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        203.0,
+                        204.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        210.0,
+                        212.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        215.0,
+                        218.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        223.0,
+                        225.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        236.0,
+                        238.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        251.0,
+                        252.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        266.0,
+                        268.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        271.0,
+                        275.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        281.0,
+                        283.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        284.0,
+                        287.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        293.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A5_part5": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        9.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        10.0,
+                        12.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        19.0,
+                        20.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        21.0,
+                        23.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        37.0,
+                        39.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        77.0,
+                        79.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        91.0,
+                        93.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        96.0,
+                        103.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        117.0,
+                        134.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        137.0,
+                        150.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        155.0,
+                        157.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        180.0,
+                        182.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        197.0,
+                        199.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        228.0,
+                        229.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        252.0,
+                        257.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        282.0,
+                        290.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A5_part6": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        15.0,
+                        18.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        30.0,
+                        32.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        39.0,
+                        48.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        57.0,
+                        65.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        86.0,
+                        108.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        113.0,
+                        118.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        125.0,
+                        146.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        155.0,
+                        157.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        198.0,
+                        203.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        205.0,
+                        207.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        225.0,
+                        242.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        243.0,
+                        245.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        266.0,
+                        275.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        297.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A5_part7": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        18.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        39.0,
+                        47.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        77.0,
+                        94.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        128.0,
+                        131.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        135.0,
+                        140.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        147.0,
+                        155.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A5_part8": {
+            "subset": "test",
+            "split": 1,
+            "duration": 127.0,
+            "annotations": [
+                {
+                    "segment": [
+                        75.0,
+                        80.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        94.0,
+                        98.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        111.0,
+                        118.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        123.0,
+                        126.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A6_part1": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        3.0,
+                        14.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        15.0,
+                        34.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        38.0,
+                        40.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        47.0,
+                        50.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        52.0,
+                        57.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        61.0,
+                        63.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        64.0,
+                        73.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        78.0,
+                        83.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        89.0,
+                        90.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        92.0,
+                        95.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        98.0,
+                        104.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        233.0,
+                        240.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        250.0,
+                        258.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        266.0,
+                        283.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        287.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A6_part2": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        11.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        19.0,
+                        21.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        105.0,
+                        109.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A6_part3": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        96.0,
+                        98.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        125.0,
+                        128.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        146.0,
+                        150.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        163.0,
+                        177.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        203.0,
+                        203.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        215.0,
+                        219.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        245.0,
+                        255.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        268.0,
+                        270.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        279.0,
+                        282.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        298.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A6_part4": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        23.0,
+                        29.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        36.0,
+                        45.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        83.0,
+                        85.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        135.0,
+                        146.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        170.0,
+                        178.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        212.0,
+                        231.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        241.0,
+                        250.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        264.0,
+                        273.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        291.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A6_part5": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        12.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        36.0,
+                        39.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        55.0,
+                        69.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        87.0,
+                        98.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        112.0,
+                        124.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        226.0,
+                        232.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        234.0,
+                        236.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        242.0,
+                        244.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        260.0,
+                        263.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        294.0,
+                        298.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A6_part6": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        8.0,
+                        11.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        11.0,
+                        203.0
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        204.0,
+                        211.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        217.0,
+                        221.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        224.0,
+                        226.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        273.0,
+                        277.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        280.0,
+                        283.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A6_part7": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        149.0,
+                        150.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        160.0,
+                        170.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        194.0,
+                        196.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        200.0,
+                        217.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        218.0,
+                        223.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        230.0,
+                        245.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        255.0,
+                        266.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        285.0,
+                        295.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        298.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A6_part8": {
+            "subset": "train",
+            "split": 1,
+            "duration": 120.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        9.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        27.0,
+                        29.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        32.0,
+                        35.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        49.0,
+                        52.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        55.0,
+                        58.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        59.0,
+                        70.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        85.0,
+                        97.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        105.0,
+                        106.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        117.0,
+                        120.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A7_part1": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.01,
+                        2.08
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        2.27,
+                        2.4
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        2.58,
+                        3.15
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        3.29,
+                        3.43
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        3.44,
+                        3.55
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        3.57,
+                        4.12
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A7_part2": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.32,
+                        0.45
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        0.46,
+                        0.5
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        0.51,
+                        1.03
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        1.07,
+                        1.12
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        1.43,
+                        1.56
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        2.02,
+                        2.35
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        2.54,
+                        3.06
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        3.43,
+                        3.5
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        4.04,
+                        4.07
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A7_part3": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.04,
+                        0.15
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        130.0,
+                        147.0
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        291.0,
+                        294.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A7_part4": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        204.0,
+                        208.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        281.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A7_part5": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        0.0,
+                        4.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        7.0,
+                        21.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        83.0,
+                        95.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        218.0,
+                        230.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        265.0,
+                        278.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A7_part6": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        5.0,
+                        9.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        10.0,
+                        24.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A7_part7": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        5.0,
+                        9.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        10.0,
+                        24.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        25.0,
+                        29.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        154.0,
+                        163.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        164.0,
+                        172.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        231.0,
+                        249.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A7_part8": {
+            "subset": "train",
+            "split": 1,
+            "duration": 119.0,
+            "annotations": [
+                {
+                    "segment": [
+                        79.0,
+                        119.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A8_part1": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        9.0,
+                        12.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        10.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A8_part2": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        64.0
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        65.0,
+                        71.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        118.0,
+                        120.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        126.0,
+                        128.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        144.0,
+                        150.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        181.0,
+                        183.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        185.0,
+                        186.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        190.0,
+                        195.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        202.0,
+                        219.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        220.0,
+                        224.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        225.0,
+                        229.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        243.0,
+                        251.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        279.0,
+                        281.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        293.0,
+                        298.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A8_part3": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        7.0,
+                        30.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        32.0,
+                        39.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        50.0,
+                        51.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        66.0,
+                        68.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        84.0,
+                        89.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        95.0,
+                        97.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        122.0,
+                        123.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        158.0,
+                        160.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        167.0,
+                        170.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        177.0,
+                        180.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        195.0,
+                        198.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        208.0,
+                        210.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        223.0,
+                        226.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        231.0,
+                        249.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        250.0,
+                        262.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        269.0,
+                        275.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        283.0,
+                        290.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A8_part4": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        6.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        12.0,
+                        15.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        20.0,
+                        28.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        31.0,
+                        34.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        38.0,
+                        50.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        59.0,
+                        78.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        81.0,
+                        84.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        86.0,
+                        119.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        127.0,
+                        137.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        144.0,
+                        148.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        153.0,
+                        165.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        172.0,
+                        174.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        177.0,
+                        218.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        225.0,
+                        266.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        267.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A8_part5": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        19.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        33.0,
+                        34.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        41.0,
+                        44.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        46.0,
+                        55.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        63.0,
+                        107.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        132.0,
+                        134.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        180.0,
+                        202.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        209.0,
+                        213.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        220.0,
+                        243.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        253.0,
+                        255.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        259.0,
+                        262.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        289.0,
+                        293.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A8_part6": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        5.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        40.0,
+                        42.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        56.0,
+                        59.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        60.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A8_part7": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A8_part8": {
+            "subset": "train",
+            "split": 1,
+            "duration": 115.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        115.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A9_part1": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A9_part2": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A9_part3": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A9_part4": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A9_part5": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A9_part6": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A9_part7": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A9_part8": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        265.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A10_part1": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        69.0
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        70.0,
+                        74.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        107.0,
+                        109.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        111.0,
+                        113.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        131.0,
+                        133.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        148.0,
+                        152.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        164.0,
+                        166.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        204.0,
+                        205.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        269.0,
+                        272.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        282.0,
+                        283.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A10_part2": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        19.0,
+                        32.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        33.0,
+                        52.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        56.0,
+                        73.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        75.0,
+                        78.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        90.0,
+                        98.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        114.0,
+                        122.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        129.0,
+                        132.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        137.0,
+                        144.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        160.0,
+                        162.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        175.0,
+                        177.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        206.0,
+                        210.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        213.0,
+                        216.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        239.0,
+                        263.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        265.0,
+                        268.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        269.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A10_part3": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        37.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        38.0,
+                        48.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        73.0,
+                        78.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        83.0,
+                        84.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        90.0,
+                        91.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        130.0,
+                        140.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        154.0,
+                        160.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        201.0,
+                        203.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        207.0,
+                        209.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        219.0,
+                        223.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        252.0,
+                        278.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        281.0,
+                        290.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A10_part4": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        25.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        90.0,
+                        101.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        103.0,
+                        108.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        231.0,
+                        237.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        268.0,
+                        273.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        285.0,
+                        289.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A10_part5": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        13.0,
+                        17.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        18.0,
+                        41.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        43.0,
+                        61.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        98.0,
+                        101.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        150.0,
+                        154.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        163.0,
+                        167.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        183.0,
+                        186.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        192.0,
+                        194.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        232.0,
+                        235.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        238.0,
+                        240.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        261.0,
+                        265.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        277.0,
+                        281.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        283.0,
+                        289.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A10_part6": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        53.0,
+                        55.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        79.0,
+                        81.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        141.0,
+                        148.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        177.0,
+                        181.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        217.0,
+                        220.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        230.0,
+                        233.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        245.0,
+                        251.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        279.0,
+                        281.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        295.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A10_part7": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        6.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        16.0,
+                        20.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        32.0,
+                        35.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        79.0,
+                        82.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        91.0,
+                        96.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        107.0,
+                        111.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        114.0,
+                        117.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        145.0,
+                        154.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        159.0,
+                        168.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        180.0,
+                        188.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        194.0,
+                        196.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A10_part8": {
+            "subset": "train",
+            "split": 1,
+            "duration": 116.0,
+            "annotations": [
+                {
+                    "segment": [
+                        51.0,
+                        56.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        104.0,
+                        106.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A11_part1": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        8.0,
+                        10.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        12.0,
+                        18.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        58.0,
+                        60.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        131.0,
+                        135.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        138.0,
+                        188.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        194.0,
+                        196.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        202.0,
+                        210.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        216.0,
+                        227.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A11_part2": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        3.0,
+                        5.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        11.0,
+                        14.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        24.0,
+                        26.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        28.0,
+                        31.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        42.0,
+                        53.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        98.0,
+                        109.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        111.0,
+                        121.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        149.0,
+                        161.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        183.0,
+                        187.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        189.0,
+                        193.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        201.0,
+                        215.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        254.0,
+                        256.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        260.0,
+                        264.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        278.0,
+                        291.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        296.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A11_part3": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        10.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        15.0,
+                        17.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        35.0,
+                        51.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        58.0,
+                        67.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        72.0,
+                        89.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        96.0,
+                        97.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        122.0,
+                        124.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        133.0,
+                        135.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        143.0,
+                        146.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        147.0,
+                        300.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A11_part4": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        130.0
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        131.0,
+                        136.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        146.0,
+                        150.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        155.0,
+                        176.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        180.0,
+                        198.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        195.0,
+                        196.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        198.0,
+                        199.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        219.0,
+                        234.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        240.0,
+                        271.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        273.0,
+                        277.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        280.0,
+                        282.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A11_part5": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        17.0,
+                        18.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        24.0,
+                        27.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        125.0,
+                        144.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        153.0,
+                        156.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        162.0,
+                        164.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        165.0,
+                        171.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        177.0,
+                        179.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        183.0,
+                        193.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A11_part6": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        3.0,
+                        5.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        8.0,
+                        11.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        15.0,
+                        21.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        30.0,
+                        32.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        36.0,
+                        39.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        51.0,
+                        52.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        54.0,
+                        68.0
+                    ],
+                    "label": "no teacher in the classroom"
+                },
+                {
+                    "segment": [
+                        69.0,
+                        74.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        85.0,
+                        86.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        94.0,
+                        95.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        100.0,
+                        102.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        105.0,
+                        108.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        144.0,
+                        146.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        209.0,
+                        211.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        219.0,
+                        220.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        255.0,
+                        262.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        275.0,
+                        285.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        288.0,
+                        292.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        299.0,
+                        300.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A11_part7": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        5.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        7.0,
+                        21.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        25.0,
+                        35.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        125.0,
+                        127.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        131.0,
+                        133.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        130.0,
+                        133.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        154.0,
+                        157.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        165.0,
+                        170.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        181.0,
+                        183.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        189.0,
+                        192.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        203.0,
+                        205.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        210.0,
+                        211.0
+                    ],
+                    "label": "teacher active"
+                }
+            ]
+        },
+        "A11_part8": {
+            "subset": "test",
+            "split": 1,
+            "duration": 116.0,
+            "annotations": [
+                {
+                    "segment": [
+                        12.0,
+                        15.0
+                    ],
+                    "label": "teacher active"
+                },
+                {
+                    "segment": [
+                        16.0,
+                        116.0
+                    ],
+                    "label": "no teacher in the classroom"
+                }
+            ]
+        },
+        "A15_part1": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "empty classroom"
+                }
+            ]
+        },
+        "A15_part2": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "empty classroom"
+                }
+            ]
+        },
+        "A15_part3": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "empty classroom"
+                }
+            ]
+        },
+        "A15_part4": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "empty classroom"
+                }
+            ]
+        },
+        "A15_part5": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "empty classroom"
+                }
+            ]
+        },
+        "A15_part6": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "empty classroom"
+                }
+            ]
+        },
+        "A15_part7": {
+            "subset": "test",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "empty classroom"
+                }
+            ]
+        },
+        "A15_part8": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "empty classroom"
+                }
+            ]
+        },
+        "A15_part9": {
+            "subset": "train",
+            "split": 1,
+            "duration": 300.0,
+            "annotations": [
+                {
+                    "segment": [
+                        1.0,
+                        300.0
+                    ],
+                    "label": "empty classroom"
+                }
+            ]
+        }
+    }
+}
