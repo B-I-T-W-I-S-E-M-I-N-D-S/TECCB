@@ -6,6 +6,8 @@ import torch.nn.functional as F
 import numpy as np
 import opts_thumos as opts_thumos  # Import thumos options
 import opts_egtea as opts_egtea    # Import egtea options
+import opts_cricket as opts_cricket  
+import opts_classroom as opts_classroom
 import time
 import h5py
 from tqdm import tqdm
@@ -182,6 +184,8 @@ class ActionDetectionModel:
     def __init__(self):
         self.thumos_opt = vars(opts_thumos.parse_opt())
         self.egtea_opt = vars(opts_egtea.parse_opt())
+        self.cricket_opt = vars(opts_cricket.parse_opt())
+        self.classroom_opt = vars(opts_classroom.parse_opt())
         self.model = None
         self.suppress_model = None
         self.task_status = {}
@@ -195,7 +199,15 @@ class ActionDetectionModel:
         """Loads the MYNET and SuppressNet models based on video name"""
         # Determine which options to use based on video name
         print(video_name)
-        opt = self.thumos_opt if video_name.startswith("video") else self.egtea_opt
+        
+        if video_name.startswith("video"):
+            opt = self.thumos_opt 
+        elif video_name.startswith("test"):
+            opt = self.cricket_opt
+        elif video_name.startswith("A"):
+            opt = self.classroom_opt
+        else:
+            opt = self.egtea_opt
         
         # Save options to checkpoint path
         os.makedirs(opt["checkpoint_path"], exist_ok=True)
@@ -221,6 +233,12 @@ class ActionDetectionModel:
         if video_name.startswith("video"):
             print("checkpoint for thumos")
             checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}ckp_best.pth.tar")
+        elif video_name.startswith("test"):
+            print("checkpoint for Cricket")
+            checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}__ckp_best.pth.tar")
+        elif video_name.startswith("A"):
+            print("checkpoint for ClassRoom")
+            checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}___ckp_best.pth.tar")
         else:
             print("checkpoint for egtea")
             checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best.pth.tar")
@@ -234,6 +252,12 @@ class ActionDetectionModel:
             if video_name.startswith("video"):
                 print("suppress for thumos")
                 suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "_ckp_best_suppress.pth.tar")
+            elif video_name.startswith("test"):
+                print("suppress for cricket")
+                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "__ckp_best_suppress.pth.tar")
+            elif video_name.startswith("A"):
+                print("suppress for cricket")
+                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "___ckp_best_suppress.pth.tar")
             else:
                 print("suppress for egtea")  # Corrected typo in print statement
                 suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "ckp_best_suppress.pth.tar")
@@ -1107,7 +1131,8 @@ async def watch_video(video_name: str):
     Example:
         GET /watch/example_video
     """
-    opt = action_model.thumos_opt if video_name.startswith("video") else action_model.egtea_opt
+    # opt = action_model.thumos_opt if video_name.startswith("video") elif video_name.startswith("test") else action_model.egtea_opt
+    opt = action_model.thumos_opt if video_name.startswith("video") or video_name.startswith("test") else action_model.egtea_opt
     file_name = f"annotated_{video_name}_{opt['exp']}.mp4"
     file_path = os.path.join("output", "videos", file_name)
     if not os.path.exists(file_path):

@@ -292,6 +292,14 @@ class VideoDataSet(data.Dataset):
                 'HammerThrow', 'HighJump', 'JavelinThrow', 'LongJump', 'PoleVault',
                 'Shotput', 'SoccerPenalty', 'TennisSwing', 'ThrowDiscus', 'VolleyballSpiking'
             ]
+        elif self.single_video_name.startswith("test"):
+             expected_labels = [
+            'cover', 'defense','flick','hook','late_cut','lofted','pull','square_cut','straight','sweep'
+            ]
+        elif self.single_video_name.startswith("A"):
+             expected_labels = [
+            'teacher active', 'no teacher in the classroom','empty classroom'
+            ]
         else:
             # Ensure all 22 EGTEA action classes are included
             expected_labels = [
