@@ -56,12 +56,12 @@ def parse_opt():
     parser.add_argument(
         '--video_feature_all_train',
         type=str,
-        default="./data/thumos_all_feature_val_V3.pickle")
+        default="./data/Thumos_features/thumos_all_feature_val_V3.pickle")
     parser.add_argument(
         '--video_feature_all_test',
         type=str,
-        default="./data/thumos_all_feature_test_V3.pickle")
-    parser.add_argument('--exp', type=str, default="")
+        default="./data/Thumos_features/thumos_all_feature_test_V3.pickle")
+    parser.add_argument('--exp', type=str, default="thumos")
     parser.add_argument('--split', type=str, default="")
     parser.add_argument('--setup', type=str, default="")
         
@@ -153,27 +153,27 @@ def parse_opt():
     parser.add_argument(
         '--video_len_file',
         type=str,
-        default="./output/video_len_{}.json")
+        default="./output/thumos_video_len_{}.json")
     parser.add_argument(
         '--proposal_label_file',
         type=str,
-        default="./output/proposal_label_{}.h5")
+        default="./output/thumos_proposal_label_{}.h5")
     parser.add_argument(
         '--suppress_label_file',
         type=str,
-        default="./output/suppress_label_{}.h5")
+        default="./output/thumos_suppress_label_{}.h5")
     parser.add_argument(
         '--suppress_result_file',
         type=str,
-        default="./output/suppress_result.h5")
+        default="./output/thumos_suppress_result.h5")
     parser.add_argument(
         '--frame_result_file',
         type=str,
-        default="./output/frame_result.h5")
+        default="./output/thumos_frame_result.h5")
     parser.add_argument(
         '--result_file',
         type=str,
-        default="./output/result_proposal.json")
+        default="./output/thumos_result_proposal.json")
     parser.add_argument(
         '--wterm',
         type=bool,

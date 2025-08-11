@@ -21,7 +21,7 @@ def parse_opt():
     parser.add_argument('--video_feature_all_train', type=str, default="./data/Classroom_features/")
     parser.add_argument('--video_feature_all_test', type=str, default="./data/Classroom_features/")
     parser.add_argument('--setup', type=str, default="")
-    parser.add_argument('--exp', type=str, default="01")
+    parser.add_argument('--exp', type=str, default="class")
     parser.add_argument('--split', type=str, default="1")
 
     # Network
@@ -50,12 +50,12 @@ def parse_opt():
     parser.add_argument('--threshold', type=float, default=0.1)
     parser.add_argument('--inference_subset', type=str, default="test")
     parser.add_argument('--soft_nms', type=float, default=0.3)
-    parser.add_argument('--video_len_file', type=str, default="./output/___video_len_{}.json")
-    parser.add_argument('--proposal_label_file', type=str, default="./output/___proposal_label_{}.h5")
-    parser.add_argument('--suppress_label_file', type=str, default="./output/___suppress_label_{}.h5")
-    parser.add_argument('--suppress_result_file', type=str, default="./output/___suppress_result{}.h5")
-    parser.add_argument('--frame_result_file', type=str, default="./output/___frame_result{}.h5")
-    parser.add_argument('--result_file', type=str, default="./output/___result_proposal{}.json")
+    parser.add_argument('--video_len_file', type=str, default="./output/class_video_len_{}.json")
+    parser.add_argument('--proposal_label_file', type=str, default="./output/class_proposal_label_{}.h5")
+    parser.add_argument('--suppress_label_file', type=str, default="./output/class_suppress_label_{}.h5")
+    parser.add_argument('--suppress_result_file', type=str, default="./output/class_suppress_result{}.h5")
+    parser.add_argument('--frame_result_file', type=str, default="./output/class_frame_result{}.h5")
+    parser.add_argument('--result_file', type=str, default="./output/class_result_proposal.json")
     parser.add_argument('--wterm', type=bool, default=False)
 
     args = parser.parse_args()

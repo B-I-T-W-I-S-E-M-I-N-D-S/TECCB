@@ -232,13 +232,13 @@ class ActionDetectionModel:
         self.model = MYNET(opt, video_name).to(device)
         if video_name.startswith("video"):
             print("checkpoint for thumos")
-            checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}ckp_best.pth.tar")
+            checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best.pth.tar")
         elif video_name.startswith("test"):
             print("checkpoint for Cricket")
-            checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}__ckp_best.pth.tar")
+            checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best.pth.tar")
         elif video_name.startswith("A"):
             print("checkpoint for ClassRoom")
-            checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}___ckp_best.pth.tar")
+            checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best.pth.tar")
         else:
             print("checkpoint for egtea")
             checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best.pth.tar")
@@ -251,16 +251,16 @@ class ActionDetectionModel:
             self.suppress_model = SuppressNet(opt).to(device)
             if video_name.startswith("video"):
                 print("suppress for thumos")
-                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "_ckp_best_suppress.pth.tar")
+                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best_suppress.pth.tar")
             elif video_name.startswith("test"):
                 print("suppress for cricket")
-                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "__ckp_best_suppress.pth.tar")
+                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best_suppress.pth.tar")
             elif video_name.startswith("A"):
-                print("suppress for cricket")
-                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "___ckp_best_suppress.pth.tar")
+                print("suppress for ClassRoom")
+                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best_suppress.pth.tar")
             else:
                 print("suppress for egtea")  # Corrected typo in print statement
-                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], "ckp_best_suppress.pth.tar")
+                suppress_checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best_suppress.pth.tar")
             suppress_checkpoint = torch.load(suppress_checkpoint_path, map_location=device)
             suppress_base_dict = suppress_checkpoint['state_dict']
             self.suppress_model.load_state_dict(suppress_base_dict)
