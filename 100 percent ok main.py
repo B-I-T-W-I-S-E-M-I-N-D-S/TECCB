@@ -37,7 +37,7 @@ import re
 # Visualization Configuration
 VIS_CONFIG = {
     'frame_interval': 1.0,
-    'max_frames': 50,
+    'max_frames': 20,
     'save_dir': os.path.join('output', 'visualizations'),
     'video_save_dir': os.path.join('output', 'videos'),
     'gt_color': '#1f77b4',  # Blue for ground truth
@@ -542,125 +542,122 @@ class ActionDetectionModel:
             raise e
 
     def visualize_action_lengths(
-            self,
-            video_id: str,
-            pred_segments: List[Dict],
-            gt_segments: List[Dict],
-            video_path: str,
-            duration: float,
-            save_dir: str = VIS_CONFIG['save_dir'],
-            frame_interval: float = VIS_CONFIG['frame_interval'],
-            task_id: Optional[str] = None,
-            opt: Optional[Dict] = None
-        ) -> str:
-            os.makedirs(save_dir, exist_ok=True)
+        self,
+        video_id: str,
+        pred_segments: List[Dict],
+        gt_segments: List[Dict],
+        video_path: str,
+        duration: float,
+        save_dir: str = VIS_CONFIG['save_dir'],
+        frame_interval: float = VIS_CONFIG['frame_interval'],
+        task_id: Optional[str] = None,
+        opt: Optional[Dict] = None
+    ) -> str:
+        os.makedirs(save_dir, exist_ok=True)
+        if task_id:
+            self.task_status[task_id] = {"status": "processing"}
+        try:
+            num_frames = int(duration / frame_interval) + 1
+            if num_frames > VIS_CONFIG['max_frames']:
+                frame_interval = duration / (VIS_CONFIG['max_frames'] - 1)
+                num_frames = VIS_CONFIG['max_frames']
+                print(f"Warning: Adjusted frame_interval to {frame_interval:.2f}s.")
+
+            frame_times = np.linspace(0, duration, num_frames, endpoint=False)
+            frames = []
+            cap = cv2.VideoCapture(video_path)
+            if not cap.isOpened():
+                print(f"Warning: Could not open video {video_path}. Using placeholder frames.")
+                frames = [np.ones((100, 100, 3), dtype=np.uint8) * 255 for _ in frame_times]
+            else:
+                for t in frame_times:
+                    cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
+                    ret, frame = cap.read()
+                    if ret:
+                        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        frame = cv2.resize(frame, (int(frame.shape[1] * 0.5), int(frame.shape[0] * 0.5)))
+                        frames.append(frame)
+                    else:
+                        frames.append(np.ones((100, 100, 3), dtype=np.uint8) * 255)
+                cap.release()
+
+            fig = plt.figure(figsize=(num_frames * VIS_CONFIG['frame_scale_factor'], 6), constrained_layout=True)
+            gs = fig.add_gridspec(3, num_frames, height_ratios=[3, 1, 1])
+
+            for i, (t, frame) in enumerate(zip(frame_times, frames)):
+                ax = fig.add_subplot(gs[0, i])
+                gt_hit = any(seg['start'] <= t <= seg['end'] for seg in gt_segments)
+                pred_hit = any(seg['start'] <= t <= seg['end'] for seg in pred_segments)
+                border_color = None
+                if gt_hit and pred_hit:
+                    border_color = VIS_CONFIG['frame_highlight_both']
+                elif gt_hit:
+                    border_color = VIS_CONFIG['frame_highlight_gt']
+                elif pred_hit:
+                    border_color = VIS_CONFIG['frame_highlight_pred']
+                ax.imshow(frame)
+                ax.axis('off')
+                if border_color:
+                    for spine in ax.spines.values():
+                        spine.set_edgecolor(border_color)
+                        spine.set_linewidth(2)
+                ax.set_title(f"{t:.1f}s", fontsize=VIS_CONFIG['fontsize_label'],
+                             color=border_color if border_color else 'black')
+
+            ax_gt = fig.add_subplot(gs[1, :])
+            ax_gt.set_xlim(0, duration)
+            ax_gt.set_ylim(0, 1)
+            ax_gt.axis('off')
+            ax_gt.text(-0.02 * duration, 0.5, "Ground Truth", fontsize=VIS_CONFIG['fontsize_title'],
+                       va='center', ha='right', weight='bold')
+            for seg in gt_segments:
+                start, end = seg['start'], seg['end']
+                width = end - start
+                label = seg['label'][:10] + '...' if len(seg['label']) > 10 else seg['label']
+                ax_gt.add_patch(patches.Rectangle(
+                    (start, 0.3), width, 0.4, facecolor=VIS_CONFIG['gt_color'],
+                    edgecolor='black', alpha=0.8
+                ))
+                ax_gt.text((start + end) / 2, 0.5, label, ha='center', va='center',
+                           fontsize=VIS_CONFIG['fontsize_label'], color='white')
+                ax_gt.text(start, 0.2, f"{start:.1f}", ha='center', fontsize=8, color='black')
+                ax_gt.text(end, 0.2, f"{end:.1f}", ha='center', fontsize=8, color='black')
+
+            ax_pred = fig.add_subplot(gs[2, :])
+            ax_pred.set_xlim(0, duration)
+            ax_pred.set_ylim(0, 1)
+            ax_pred.axis('off')
+            ax_pred.text(-0.02 * duration, 0.5, "Prediction", fontsize=VIS_CONFIG['fontsize_title'],
+                         va='center', ha='right', weight='bold')
+            for seg in pred_segments:
+                start, end = seg['start'], seg['end']
+                width = end - start
+                label = seg['label'][:10] + '...' if len(seg['label']) > 10 else seg['label']
+                ax_pred.add_patch(patches.Rectangle(
+                    (start, 0.3), width, 0.4, facecolor=VIS_CONFIG['pred_color'],
+                    edgecolor='black', alpha=0.8
+                ))
+                ax_pred.text((start + end) / 2, 0.5, label, ha='center', va='center',
+                             fontsize=VIS_CONFIG['fontsize_label'], color='white')
+                ax_pred.text(start, 0.8, f"{start:.1f}", ha='center', fontsize=8, color='black')
+                ax_pred.text(end, 0.8, f"{end:.1f}", ha='center', fontsize=8, color='black')
+
+            jpg_path = os.path.join(save_dir, f"viz_{video_id}_{opt['exp']}.png")
+            plt.savefig(jpg_path, dpi=100, bbox_inches='tight')
+            plt.close()
+            print(f"[✅ Saved Visualization]: {jpg_path}")
             if task_id:
-                self.task_status[task_id] = {"status": "processing"}
-            try:
-                num_frames = int(duration / frame_interval) + 1
-                if num_frames > VIS_CONFIG['max_frames']:
-                    frame_interval = duration / (VIS_CONFIG['max_frames'] - 1)
-                    num_frames = VIS_CONFIG['max_frames']
-                    print(f"Warning: Adjusted frame_interval to {frame_interval:.2f}s.")
+                self.task_status[task_id] = {
+                    "status": "completed",
+                    "visualization_path": jpg_path,
+                    "visualization_stream_url": f"{self.base_url}/stream/visualizations/{os.path.basename(jpg_path)}"
+                }
+            return jpg_path
+        except Exception as e:
+            if task_id:
+                self.task_status[task_id] = {"status": "failed", "error": str(e)}
+            raise e
 
-                frame_times = np.linspace(0, duration, num_frames, endpoint=False)
-                frames = []
-                cap = cv2.VideoCapture(video_path)
-                if not cap.isOpened():
-                    print(f"Warning: Could not open video {video_path}. Using placeholder frames.")
-                    frames = [np.ones((100, 100, 3), dtype=np.uint8) * 255 for _ in frame_times]
-                else:
-                    for t in frame_times:
-                        cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
-                        ret, frame = cap.read()
-                        if ret:
-                            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                            frame = cv2.resize(frame, (int(frame.shape[1] * 0.75), int(frame.shape[0] * 0.75)))  # Increased scale for larger frames
-                            frames.append(frame)
-                        else:
-                            frames.append(np.ones((100, 100, 3), dtype=np.uint8) * 255)
-                    cap.release()
-
-                # Increased figure size and frame_scale_factor for larger frames
-                fig = plt.figure(figsize=(num_frames * VIS_CONFIG['frame_scale_factor'] * 2, 10), constrained_layout=True)
-                gs = fig.add_gridspec(3, num_frames, height_ratios=[5, 1, 1], wspace=0)  # Zero width spacing for no gaps
-
-                for i, (t, frame) in enumerate(zip(frame_times, frames)):
-                    ax = fig.add_subplot(gs[0, i])
-                    gt_hit = any(seg['start'] <= t <= seg['end'] for seg in gt_segments)
-                    pred_hit = any(seg['start'] <= t <= seg['end'] for seg in pred_segments)
-                    border_color = None
-                    if gt_hit and pred_hit:
-                        border_color = VIS_CONFIG['frame_highlight_both']
-                    elif gt_hit:
-                        border_color = VIS_CONFIG['frame_highlight_gt']
-                    elif pred_hit:
-                        border_color = VIS_CONFIG['frame_highlight_pred']
-                    ax.imshow(frame)
-                    ax.axis('off')
-                    if border_color:
-                        for spine in ax.spines.values():
-                            spine.set_edgecolor(border_color)
-                            spine.set_linewidth(2)
-                    ax.set_title(f"{t:.1f}s", fontsize=VIS_CONFIG['fontsize_label'],
-                                color=border_color if border_color else 'black', pad=2)
-
-                # Remove all padding and gaps between frames
-                plt.tight_layout(pad=0, w_pad=0, h_pad=0)
-
-                ax_gt = fig.add_subplot(gs[1, :])
-                ax_gt.set_xlim(0, duration)
-                ax_gt.set_ylim(0, 1)
-                ax_gt.axis('off')
-                ax_gt.text(-0.02 * duration, 0.5, "Ground Truth", fontsize=VIS_CONFIG['fontsize_title'],
-                          va='center', ha='right', weight='bold')
-                for seg in gt_segments:
-                    start, end = seg['start'], seg['end']
-                    width = end - start
-                    label = seg['label'][:10] + '...' if len(seg['label']) > 10 else seg['label']
-                    ax_gt.add_patch(patches.Rectangle(
-                        (start, 0.3), width, 0.4, facecolor=VIS_CONFIG['gt_color'],
-                        edgecolor='black', alpha=0.8
-                    ))
-                    ax_gt.text((start + end) / 2, 0.5, label, ha='center', va='center',
-                              fontsize=VIS_CONFIG['fontsize_label'], color='white')
-                    ax_gt.text(start, 0.2, f"{start:.1f}", ha='center', fontsize=8, color='black')
-                    ax_gt.text(end, 0.2, f"{end:.1f}", ha='center', fontsize=8, color='black')
-
-                ax_pred = fig.add_subplot(gs[2, :])
-                ax_pred.set_xlim(0, duration)
-                ax_pred.set_ylim(0, 1)
-                ax_pred.axis('off')
-                ax_pred.text(-0.02 * duration, 0.5, "Prediction", fontsize=VIS_CONFIG['fontsize_title'],
-                            va='center', ha='right', weight='bold')
-                for seg in pred_segments:
-                    start, end = seg['start'], seg['end']
-                    width = end - start
-                    label = seg['label'][:10] + '...' if len(seg['label']) > 10 else seg['label']
-                    ax_pred.add_patch(patches.Rectangle(
-                        (start, 0.3), width, 0.4, facecolor=VIS_CONFIG['pred_color'],
-                        edgecolor='black', alpha=0.8
-                    ))
-                    ax_pred.text((start + end) / 2, 0.5, label, ha='center', va='center',
-                                fontsize=VIS_CONFIG['fontsize_label'], color='white')
-                    ax_pred.text(start, 0.8, f"{start:.1f}", ha='center', fontsize=8, color='black')
-                    ax_pred.text(end, 0.8, f"{end:.1f}", ha='center', fontsize=8, color='black')
-
-                jpg_path = os.path.join(save_dir, f"viz_{video_id}_{opt['exp']}.png")
-                plt.savefig(jpg_path, dpi=150, bbox_inches='tight', pad_inches=0)  # Higher DPI for clarity
-                plt.close()
-                print(f"[✅ Saved Visualization]: {jpg_path}")
-                if task_id:
-                    self.task_status[task_id] = {
-                        "status": "completed",
-                        "visualization_path": jpg_path,
-                        "visualization_stream_url": f"{self.base_url}/stream/visualizations/{os.path.basename(jpg_path)}"
-                    }
-                return jpg_path
-            except Exception as e:
-                if task_id:
-                    self.task_status[task_id] = {"status": "failed", "error": str(e)}
-                raise e
     def eval_frame(self, dataset, opt, video_name):
         test_loader = torch.utils.data.DataLoader(dataset,
                                                   batch_size=opt['batch_size'], shuffle=False,
