@@ -37,7 +37,7 @@ import re
 # Visualization Configuration
 VIS_CONFIG = {
     'frame_interval': 1.0,
-    'max_frames': 10,
+    'max_frames': 50,
     'save_dir': os.path.join('output', 'visualizations'),
     'video_save_dir': os.path.join('output', 'videos'),
     'gt_color': '#1f77b4',  # Blue for ground truth
@@ -49,7 +49,7 @@ VIS_CONFIG = {
     'frame_highlight_pred': 'black',
     'iou_threshold': 0.3,
     'frame_scale_factor': 0.8,
-    'video_text_scale': 0.9,
+    'video_text_scale': 0.5,
     'video_gt_text_color': (180, 119, 31),  # BGR for OpenCV
     'video_pred_text_color': (14, 127, 255),  # BGR for OpenCV
     'video_text_thickness': 1,
@@ -61,7 +61,7 @@ VIS_CONFIG = {
     'video_gt_bar_y': 0.2,
     'video_pred_bar_y': 0.5,
     'video_bar_height': 0.15,
-    'video_bar_text_scale': 1.1,
+    'video_bar_text_scale': 0.7,
     'min_segment_duration': 1.0,
     'video_frame_text_y': 0.05,
     'video_bar_label_x': 10,
@@ -235,7 +235,6 @@ class ActionDetectionModel:
             checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best.pth.tar")
         elif video_name.startswith("test"):
             print("checkpoint for Cricket")
-            VIS_CONFIG['min_segment_duration'] = 0.1
             checkpoint_path = os.path.join(opt["checkpoint_path"], f"{opt['exp']}_ckp_best.pth.tar")
         elif video_name.startswith("A"):
             print("checkpoint for ClassRoom")
@@ -276,7 +275,7 @@ class ActionDetectionModel:
         gt_segments: List[Dict],
         video_path: str,
         save_dir: str = VIS_CONFIG['video_save_dir'],
-        text_scale: float = VIS_CONFIG['video_text_scale'] * 1.9,
+        text_scale: float = VIS_CONFIG['video_text_scale'] * 1.2,
         gt_text_color: tuple = VIS_CONFIG['video_gt_text_color'],
         pred_text_color: tuple = VIS_CONFIG['video_pred_text_color'],
         text_thickness: int = VIS_CONFIG['video_text_thickness'],
@@ -303,7 +302,7 @@ class ActionDetectionModel:
             is_thumos = video_id.startswith("video")
             footer_height = 100 if is_thumos else VIS_CONFIG['video_footer_height']  # Smaller footer for Thumos
             output_height = frame_height + footer_height
-            text_scale = 0.5 * 0.9 if is_thumos else VIS_CONFIG['video_text_scale'] * 1.9  # Same base size, adjusted for quality
+            text_scale = 0.5 * 0.9 if is_thumos else VIS_CONFIG['video_text_scale'] * 1.2  # Same base size, adjusted for quality
             bar_height = int(0.1 * footer_height) if is_thumos else int(VIS_CONFIG['video_bar_height'] * footer_height)  # Smaller bars for Thumos
             bar_text_scale = 0.4 if is_thumos else VIS_CONFIG['video_bar_text_scale']  # Same base size for Thumos
             text_thickness = 2 if is_thumos else VIS_CONFIG['video_text_thickness']  # Increased thickness for better quality
